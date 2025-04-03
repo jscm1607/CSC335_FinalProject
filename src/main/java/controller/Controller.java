@@ -1,12 +1,28 @@
 package controller;
-import model.Model; // Importing Model class
+
+import model.RestaurantDB; // Importing Model class
 import view.View; // Importing View class
 
 public class Controller {
     public static void main(String[] args) {
         // FIXME: placeholder code
-        Model model = new Model();
         View view = new View();
-        System.out.println("Hello, World!");
+        // Example SQL to create and populate a test_table
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS test_table (" +
+                                "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                                "name VARCHAR(255), " +
+                                "age INT);";
+
+        String insertDataSQL = "INSERT INTO test_table (name, age) VALUES " +
+                               "('Alice', 30), " +
+                               "('Bob', 25), " +
+                               "('Charlie', 35);";
+        try {
+            RestaurantDB.executeSQL(createTableSQL);
+            RestaurantDB.executeSQL(insertDataSQL);
+            RestaurantDB.runH2Console(); // Call the test method to set up the database
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle any exceptions that may occur
+        }
     }
 }
