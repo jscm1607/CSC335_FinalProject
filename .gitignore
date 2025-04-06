@@ -2,3 +2,5 @@
 /out/
 *.class
 *.mp4
+.vscode
+/data
