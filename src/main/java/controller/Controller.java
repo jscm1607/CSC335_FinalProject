@@ -1,12 +1,11 @@
 package controller;
 
-import dao.DatabaseManager;
-import view.View; // Importing View class
+import dao.DBM;
 
 public class Controller {
     public static void main(String[] args) {
-        // FIXME: placeholder code
-        View view = new View();
-        DatabaseManager.runH2Console();
+        DBM db = new DBM("sa", "", "jdbc:h2:./data/db");
+        db.runH2Console();
+        // TODO implement app
     }
 }
