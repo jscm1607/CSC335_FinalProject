@@ -33,7 +33,7 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     }
 
     @Test
-    void testInsertAndSelect() {
+    void testServerInsertAndSelect() {
         Server s = randomServer();
         dao.insert(s, db);
         Server res = dao.select(s.getUsername(), db);
@@ -41,13 +41,13 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     }
 
     @Test
-    void testSelectServerEmpty() {
+    void testServerSelectEmpty() {
         List<Server> res = dao.selectAll(db);
         assertEquals(0, res.size());
     }
 
     @Test
-    void testSelectAll() {
+    void testServerSelectAll() {
         // insert 10 random
         List<Server> svs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -65,7 +65,7 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     }
 
     @Test
-    void testUpdate() {
+    void testServerUpdate() {
         String newPassword = "newPass";
         Server s = randomServer();
         Server s_up = new Server(s.getUsername(), newPassword);
@@ -80,7 +80,7 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     }
 
     @Test
-    void testDelete() {
+    void testServerDelete() {
         assertTrue(dao.selectAll(db).isEmpty());
         Server s = randomServer();
         dao.insert(s, db);
