@@ -68,6 +68,17 @@ public class Food {
 		this.numOrders = numOrders;
 	}
 	
+	@Override
+	public String toString() {
+	    return "Food{id=" + id +
+	           ", name='" + name + '\'' +
+	           ", category=" + category +
+	           ", cost=" + cost +
+	           ", inStock=" + inStock +
+	           ", numOrders=" + numOrders + '}';
+	}
+
+	
 }
 
 // Category enum

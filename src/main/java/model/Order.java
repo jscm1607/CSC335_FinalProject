@@ -49,5 +49,14 @@ public class Order {
 		this.tip = tip;
 	}
 	
+	@Override
+	public String toString() {
+	    return "Order{id=" + id +
+	           ", closed=" + closed +
+	           ", tableNumber=" + tableNumber +
+	           ", tip=" + tip + '}';
+	}
+
+	
 	
 }

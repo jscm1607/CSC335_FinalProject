@@ -61,4 +61,14 @@ public class Session {
 		this.tables = tables;
 	}
 	
+	@Override
+	public String toString() {
+	    return "Session{date=" + date +
+	           ", server=" + (server != null ? server.getUsername() : "null") +
+	           ", totalTips=" + totalTips +
+	           ", open=" + open +
+	           ", tables=" + java.util.Arrays.toString(tables) + '}';
+	}
+
+	
 }

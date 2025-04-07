@@ -59,4 +59,13 @@ public class OrderFood {
 		this.modifications = modifications;
 	}
 	
+	@Override
+	public String toString() {
+	    return "OrderFood{seat=" + seat +
+	           ", quantity=" + quantity +
+	           ", food=" + (food != null ? food.getName() : "null") +
+	           ", orderId=" + (order != null ? order.getId() : "null") +
+	           ", modifications=" + (modifications != null ? String.join(", ", modifications) : "[]") + '}';
+	}
+
 }
