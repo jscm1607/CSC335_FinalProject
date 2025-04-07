@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS Server (
 --     numOrders INT
 -- );
 -- 
--- -- Create Orders table
+-- -- Create Order table
 -- CREATE TABLE IF NOT EXISTS Orders (
 --     id INT PRIMARY KEY AUTO_INCREMENT,
 --     closed BOOLEAN,
