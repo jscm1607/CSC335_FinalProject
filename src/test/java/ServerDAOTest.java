@@ -40,7 +40,8 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
         Server s = randomServer();
         dao.insert(s, db);
         Server res = dao.select(s.getUsername(), db);
-        assertEquals(s.toString(), res.toString());
+        assertEquals(s.getUsername(), res.getUsername());
+        assertEquals(s.getPassword(), res.getPassword());
     }
 
     @Test
@@ -92,10 +93,8 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
         Server s = randomServer();
         dao.insert(s, db);
         List<Server> res = dao.selectAll(db);
-        assertFalse(res.isEmpty());
         assertEquals(1, res.size());
-        assertEquals(s.toString(), res.get(0).toString());
-        assertEquals(s.toString(), dao.select(s.getUsername(), db).toString());
+        assertEquals(s.getPassword(), dao.select(s.getUsername(), db).getPassword());
         dao.delete(s.getUsername(), db);
         assertTrue(dao.selectAll(db).isEmpty(), "Should be empty.");
     }

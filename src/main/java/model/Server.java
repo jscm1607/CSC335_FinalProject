@@ -47,7 +47,8 @@ public final class Server {
 	@Override
 	public String toString() {
 		return "Server{" +
-				"username='" + username + '\'' +
+				"id=" + id +
+				", username='" + username + '\'' +
 				", password='" + password + '\'' +
 				'}';
 	}
