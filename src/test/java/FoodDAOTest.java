@@ -19,7 +19,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
 
     private Food randomFood() {
         Food fd = new Food();
-        fd.setId((int) (Math.random() * 1000));
+        fd.setId((int) (Math.random() * 1000)); //FIXME: should not pre-ppopulate ids, but fails some tests
         fd.setName("Food" + System.currentTimeMillis());
         fd.setCategory(Food.Category.values()[(int) (Math.random() * Food.Category.values().length)]);
         fd.setCost(Math.random() * 100);
