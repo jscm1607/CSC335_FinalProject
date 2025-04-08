@@ -16,17 +16,35 @@ public class DBM {
     private final String URL;
     private final String USER;
     private final String PASSWORD;
+    private Connection CONNECTION;
 
     public DBM(String user, String password, String url) {
         USER = user;
         PASSWORD = password;
         URL = url;
         // Initialize SQL tables from script "schema.sql"
-        try (Connection conn = DriverManager.getConnection(
-                URL + ";INIT=RUNSCRIPT FROM 'classpath:schema.sql'",
-                USER, PASSWORD)) {
+        try {
+            CONNECTION = DriverManager.getConnection(
+                    URL + ";INIT=RUNSCRIPT FROM 'classpath:schema.sql'",
+                    USER, PASSWORD);
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Closes the database connection when the DBM instance is no longer needed.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            if (CONNECTION != null && !CONNECTION.isClosed()) {
+                CONNECTION.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            super.finalize();
         }
     }
 
@@ -46,8 +64,7 @@ public class DBM {
      * Wrapper of PreparedStatement.executeUpdate() abstracting away boilerplate.
      */
     public void executeUpdate(String query, StatementPreparer preparer) {
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                PreparedStatement statement = connection.prepareStatement(query)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(query)) {
             preparer.prepare(statement);
             statement.executeUpdate();
         } catch (Exception e) {
@@ -56,12 +73,11 @@ public class DBM {
     }
 
     /**
-     * Wrapper of PreparedStatement.executeQuery() abstracting away boilerplate, 
+     * Wrapper of PreparedStatement.executeQuery() abstracting away boilerplate,
      * and handling ResultSet using passed ResultSetHandler to return as type T.
      */
     public <T> T executeQuery(String query, StatementPreparer preparer, ResultSetHandler<T> handler) {
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                PreparedStatement statement = connection.prepareStatement(query)) {
+        try (PreparedStatement statement = CONNECTION.prepareStatement(query)) {
             preparer.prepare(statement);
             try (ResultSet resultSet = statement.executeQuery()) {
                 return handler.handle(resultSet);
