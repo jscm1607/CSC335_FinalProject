@@ -4,16 +4,16 @@ CREATE TABLE IF NOT EXISTS Server (
     password VARCHAR(255) NOT NULL
 );
 
--- -- Create Food table
--- CREATE TABLE IF NOT EXISTS Food (
---     id INT PRIMARY KEY AUTO_INCREMENT,
---     name VARCHAR(255) NOT NULL,
---     category VARCHAR(50),
---     cost DOUBLE,
---     inStock BOOLEAN,
---     numOrders INT
--- );
--- 
+ -- Create Food table
+ CREATE TABLE IF NOT EXISTS Food (
+     id INT PRIMARY KEY AUTO_INCREMENT,
+     name VARCHAR(255) NOT NULL,
+     category VARCHAR(50),
+     cost DOUBLE,
+     inStock BOOLEAN,
+     numOrders INT
+ );
+ 
 -- -- Create Order table
 -- CREATE TABLE IF NOT EXISTS Orders (
 --     id INT PRIMARY KEY AUTO_INCREMENT,
