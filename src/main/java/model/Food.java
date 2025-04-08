@@ -1,16 +1,23 @@
 package model;
 
 public class Food {
+	// Category enum
+	public enum Category {
+		BURGERS, FRIES, SHAKES, BEVERAGES;
+	}
+
 	// INSTANCE VARIABLES
 	private int id;	// database id
 	private String name;
-	private FoodCategory category;
+	private Category category;
 	private double cost;
 	private boolean inStock;
 	private int numOrders;
 	
 	// CONSTRUCTOR
-	public Food(int id, String name, FoodCategory category, double cost, boolean inStock, int numOrders) {
+	public Food() {}
+	
+	public Food(int id, String name, Category category, double cost, boolean inStock, int numOrders) {
 		this.id = id;
 		this.name = name;
 		this.category = category;
@@ -36,11 +43,11 @@ public class Food {
 		this.name = name;
 	}
 
-	public FoodCategory getCategory() {
+	public Category getCategory() {
 		return category;
 	}
 
-	public void setCategory(FoodCategory category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 
@@ -80,9 +87,3 @@ public class Food {
 
 	
 }
-
-// Category enum
-enum FoodCategory {
-	BURGERS, FRIES, SHAKES, BEVERAGES;
-}
-
