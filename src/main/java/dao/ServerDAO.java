@@ -7,8 +7,8 @@ import model.Server;
 public class ServerDAO implements DAO<Server, String> {
 
     @Override
-    public void insert(Server entity, DBM db) {
-        db.executeUpdate("INSERT INTO Server (username, password) VALUES (?, ?)", 
+    public int insert(Server entity, DBM db) {
+        return db.executeInsert("INSERT INTO Server (username, password) VALUES (?, ?)", 
             statement -> {
                 statement.setString(1, entity.getUsername());
                 statement.setString(2, entity.getPassword());

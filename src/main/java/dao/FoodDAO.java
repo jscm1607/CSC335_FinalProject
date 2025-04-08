@@ -8,8 +8,8 @@ import model.Food;
 public class FoodDAO implements DAO<Food, Integer> {
 
     @Override
-    public void insert(Food entity, DBM db) {
-        db.executeUpdate("INSERT INTO food (id, name, category, cost, inStock, numOrders) VALUES (?, ?, ?, ?, ?, ?)",
+    public int insert(Food entity, DBM db) {
+        return db.executeInsert("INSERT INTO food (id, name, category, cost, inStock, numOrders) VALUES (?, ?, ?, ?, ?, ?)",
                 ps -> {
                     ps.setInt(1, entity.getId());
                     ps.setString(2, entity.getName());

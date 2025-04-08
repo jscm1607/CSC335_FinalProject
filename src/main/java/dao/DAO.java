@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface DAO<T, ID> {
 
-    void insert(T entity, DBM db);
+    int insert(T entity, DBM db);
 
     void update(T entity, DBM db);
 

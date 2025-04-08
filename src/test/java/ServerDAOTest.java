@@ -1,14 +1,16 @@
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.platform.commons.annotation.Testable;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import model.Server;
+import org.junit.platform.commons.annotation.Testable;
+
 import dao.ServerDAO;
+import model.Server;
 
 @Testable
 public class ServerDAOTest extends DAOTest<ServerDAO> {
@@ -16,7 +18,7 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
         this.dao = new ServerDAO();
     }
 
-    private Server randomServer() {
+    public Server randomServer() {
         String randomUsername = "user" + System.currentTimeMillis();
         String randomPassword = "pass" + System.nanoTime();
         Server ret = new Server();

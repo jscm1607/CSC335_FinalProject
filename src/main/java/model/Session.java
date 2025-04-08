@@ -10,6 +10,8 @@ public class Session {
 	private boolean open;
 	private int id;
 	
+	public Session(){}
+
 	// CONSTRUCTOR
 	public Session(int id, Date date, int serverId, double totalTips, boolean open) {
 		super();

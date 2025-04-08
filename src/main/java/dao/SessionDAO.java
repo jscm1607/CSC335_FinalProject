@@ -9,14 +9,13 @@ import model.Session;
 public class SessionDAO implements DAO<Session, Integer> {
 
     @Override
-    public void insert(Session entity, DBM db) {
-        db.executeUpdate("INSERT INTO Session (id, date, serverId, totalTips, open) VALUES (?, ?, ?, ?, ?)",
+    public int insert(Session entity, DBM db) {
+        return db.executeInsert("INSERT INTO Session (date, serverId, totalTips, open) VALUES (?, ?, ?, ?)",
                 statement -> {
-                    statement.setInt(1, entity.getId());
-                    statement.setTimestamp(2, new Timestamp(entity.getDate().getTime()));
-                    statement.setInt(3, entity.getServer());
-                    statement.setDouble(4, entity.getTotalTips());
-                    statement.setBoolean(5, entity.isOpen());
+                    statement.setTimestamp(1, new Timestamp(entity.getDate().getTime()));
+                    statement.setInt(2, entity.getServer());
+                    statement.setDouble(3, entity.getTotalTips());
+                    statement.setBoolean(4, entity.isOpen());
                 });
     }
 

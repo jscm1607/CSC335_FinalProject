@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Server (
 -- -- Create Session table
  CREATE TABLE IF NOT EXISTS Session (
      id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
-     date TIMESTAMP PRIMARY KEY,
+     date TIMESTAMP,
      serverId INT,
      totalTips DOUBLE,
      open BOOLEAN,
