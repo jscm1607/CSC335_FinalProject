@@ -19,7 +19,10 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     private Server randomServer() {
         String randomUsername = "user" + System.currentTimeMillis();
         String randomPassword = "pass" + System.nanoTime();
-        return new Server(randomUsername, randomPassword);
+        Server ret = new Server();
+        ret.setUsername(randomUsername);
+        ret.setPassword(randomPassword);
+        return ret;
     }
 
     @BeforeAll
@@ -49,27 +52,31 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     @Test
     void testServerSelectAll() {
         // insert 10 random
-        List<Server> svs = new ArrayList<>();
+        List<String> svs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Server s = randomServer();
             dao.insert(s, db);
-            svs.add(s);
+            svs.add(s.getUsername());
         }
         // get all from db
         List<Server> res = dao.selectAll(db);
+        List<String> res_usernames = new ArrayList<>();
+        for (Server s : res) {
+            res_usernames.add(s.getUsername());
+        }
         assertEquals(10, res.size());
-        // sort each list by username, should be equal
-        res.sort((s1, s2) -> s1.getUsername().compareTo(s2.getUsername()));
-        svs.sort((s1, s2) -> s1.getUsername().compareTo(s2.getUsername()));
-        assertEquals(svs.toString(), res.toString());
+        svs.sort(String::compareTo);
+        res_usernames.sort(String::compareTo);
+        assertEquals(svs.toString(), res_usernames.toString());
     }
 
     @Test
     void testServerUpdate() {
         String newPassword = "newPass";
         Server s = randomServer();
-        Server s_up = new Server(s.getUsername(), newPassword);
         dao.insert(s, db);
+        Server s_up = dao.select(s.getUsername(), db);
+        s_up.setPassword(newPassword);
         dao.update(s_up, db);
         // check if updated
         Server res1 = dao.select(s.getUsername(), db);

@@ -1,6 +1,7 @@
 -- Create Server table
 CREATE TABLE IF NOT EXISTS Server (
-    username VARCHAR(255) PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
 

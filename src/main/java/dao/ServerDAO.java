@@ -28,7 +28,7 @@ public class ServerDAO implements DAO<Server, String> {
     public Server select(String id, DBM db) {
         return db.executeQuery("SELECT * FROM Server WHERE username = ?", 
             statement -> statement.setString(1, id), 
-            resultSet -> resultSet.next() ? new Server(resultSet.getString("username"), resultSet.getString("password")) : null);
+            resultSet -> resultSet.next() ? new Server(resultSet.getInt("id"),resultSet.getString("username"), resultSet.getString("password")) : null);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ServerDAO implements DAO<Server, String> {
             resultSet -> {
                 List<Server> servers = new ArrayList<>();
                 while (resultSet.next()) {
-                    servers.add(new Server(resultSet.getString("username"), resultSet.getString("password")));
+                    servers.add(new Server(resultSet.getInt("id"),resultSet.getString("username"), resultSet.getString("password")));
                 }
                 return servers;
             });
