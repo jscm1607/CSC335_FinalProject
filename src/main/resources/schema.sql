@@ -24,13 +24,14 @@ CREATE TABLE IF NOT EXISTS Server (
 -- );
 -- 
 -- -- Create Session table
--- CREATE TABLE IF NOT EXISTS Session (
---     date TIMESTAMP PRIMARY KEY,
---     serverUsername VARCHAR(255),
---     totalTips DOUBLE,
---     open BOOLEAN,
---     FOREIGN KEY (serverUsername) REFERENCES Server(username)
--- );
+ CREATE TABLE IF NOT EXISTS Session (
+     id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
+     date TIMESTAMP PRIMARY KEY,
+     serverId INT,
+     totalTips DOUBLE,
+     open BOOLEAN,
+     FOREIGN KEY (serverId) REFERENCES Server(id)
+ );
 -- 
 -- -- Create OrderFood table
 -- CREATE TABLE IF NOT EXISTS OrderFood (
