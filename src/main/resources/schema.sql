@@ -15,23 +15,25 @@ CREATE TABLE IF NOT EXISTS Server (
      numOrders INT
  );
  
--- -- Create Order table
--- CREATE TABLE IF NOT EXISTS Orders (
---     id INT PRIMARY KEY AUTO_INCREMENT,
---     closed BOOLEAN,
---     tableNumber INT,
---     tip DOUBLE
--- );
--- 
--- -- Create Session table
- CREATE TABLE IF NOT EXISTS Session (
-     id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
-     date TIMESTAMP,
-     serverId INT,
-     totalTips DOUBLE,
-     open BOOLEAN,
-     FOREIGN KEY (serverId) REFERENCES Server(id)
- );
+-- Create Session table
+CREATE TABLE IF NOT EXISTS Session (
+    id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    date TIMESTAMP,
+    serverId INT,
+    totalTips DOUBLE,
+    open BOOLEAN,
+    FOREIGN KEY (serverId) REFERENCES Server(id)
+);
+
+-- Create Orders table
+CREATE TABLE IF NOT EXISTS Orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    closed BOOLEAN,
+    tableNumber INT,
+    tip DOUBLE,
+    sessionId INT,
+    FOREIGN KEY (sessionId) REFERENCES Session(id)
+);
 -- 
 -- -- Create OrderFood table
 -- CREATE TABLE IF NOT EXISTS OrderFood (
