@@ -87,6 +87,7 @@ public class DBM {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return -2;
         }
         return -1;
