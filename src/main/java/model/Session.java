@@ -1,40 +1,42 @@
 package model;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class Session {
 	// INSTANCE VARIABLES
-	private LocalDateTime date;
-	private Server server;
+	private Date date;
+	private int serverId;
 	private double totalTips;
 	private boolean open;
-	private int[] tables;
+	private int id;
 	
+	public Session(){}
+
 	// CONSTRUCTOR
-	public Session(LocalDateTime date, Server server, double totalTips, boolean open, int[] tables) {
+	public Session(int id, Date date, int serverId, double totalTips, boolean open) {
 		super();
+		this.id = id;
 		this.date = date;
-		this.server = server;
+		this.serverId = serverId;
 		this.totalTips = totalTips;
 		this.open = open;
-		this.tables = tables;
 	}
 
 	// SETTERS AND GETTERS
-	public LocalDateTime getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 
-	public Server getServer() {
-		return server;
+	public int getServer() {
+		return serverId;
 	}
 
-	public void setServer(Server server) {
-		this.server = server;
+	public void setServer(int serverId) {
+		this.serverId = serverId;
 	}
 
 	public double getTotalTips() {
@@ -53,21 +55,20 @@ public class Session {
 		this.open = open;
 	}
 
-	public int[] getTables() {
-		return tables;
+	public int getId() {
+		return id;
 	}
 
-	public void setTables(int[] tables) {
-		this.tables = tables;
+	public void setId(int id) {
+		this.id = id;
 	}
-	
+
 	@Override
 	public String toString() {
-	    return "Session{date=" + date +
-	           ", server=" + (server != null ? server.getUsername() : "null") +
-	           ", totalTips=" + totalTips +
-	           ", open=" + open +
-	           ", tables=" + java.util.Arrays.toString(tables) + '}';
+		return "Session{date=" + date +
+			   ", server=" + serverId +
+			   ", totalTips=" + totalTips +
+			   ", open=" + open;
 	}
 
 	

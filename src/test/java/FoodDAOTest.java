@@ -19,7 +19,6 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
 
     private Food randomFood() {
         Food fd = new Food();
-        fd.setId((int) (Math.random() * 1000)); //FIXME: should not pre-ppopulate ids, but fails some tests
         fd.setName("Food" + System.currentTimeMillis());
         fd.setCategory(Food.Category.values()[(int) (Math.random() * Food.Category.values().length)]);
         fd.setCost(Math.random() * 100);
@@ -41,10 +40,23 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     @Test
     void testFoodInsertAndSelect() {
         Food fd = randomFood();
-        dao.insert(fd, db);
+        fd.setId(dao.insert(fd, db));
+        assertTrue(fd.getId() > -2, "Should be valid Food SQL insert");
         Food res = dao.select(fd.getId(), db);
         assertEquals(fd.toString(), res.toString());
     }
+
+    public static void main(String[] args) {
+        FoodDAOTest test = new FoodDAOTest();
+        FoodDAO dao = new FoodDAO();
+
+        Food fd = test.randomFood();
+        fd.setId(dao.insert(fd, db));
+        assertTrue(fd.getId() > -2, "Should be valid Food SQL insert");
+        Food res = dao.select(fd.getId(), db);
+        assertEquals(fd.toString(), res.toString());
+    }
+    
 
     @Test
     void testFoodSelectEmpty() {
@@ -58,7 +70,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         List<Food> foods = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Food fd = randomFood();
-            dao.insert(fd, db);
+            fd.setId(dao.insert(fd, db));
             foods.add(fd);
         }
         // get all from db
@@ -74,8 +86,8 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     void testFoodUpdate() {
         Food fd = randomFood();
         Food fd_up = randomFood();
+        fd.setId(dao.insert(fd, db));
         fd_up.setId(fd.getId()); // set new food with same id
-        dao.insert(fd, db);
         dao.update(fd_up, db);
         // check if updated
         Food res1 = dao.select(fd.getId(), db);
@@ -89,7 +101,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     void testFoodDelete() {
         assertTrue(dao.selectAll(db).isEmpty());
         Food fd = randomFood();
-        dao.insert(fd, db);
+        fd.setId(dao.insert(fd, db));
         List<Food> res = dao.selectAll(db);
         assertFalse(res.isEmpty());
         assertEquals(1, res.size());
