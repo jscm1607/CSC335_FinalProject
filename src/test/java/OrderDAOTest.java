@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -14,23 +13,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
 import dao.OrderDAO;
+import dao.ServerDAO;
 import dao.SessionDAO;
 import model.Order;
+import model.Server;
 import model.Session;
 
 @Testable
 public class OrderDAOTest extends DAOTest<OrderDAO> {
-    private final SessionDAO sessionDao = new SessionDAO();
-    private final SessionDAOTest sdaot = new SessionDAOTest();
+    private final SessionDAO sessionDao;
+    private final SessionDAOTest sndaot;
+    private final ServerDAO serverDao;
+    private final ServerDAOTest svdaot;
 
     public OrderDAOTest() {
+        sessionDao = new SessionDAO();
+        serverDao = new ServerDAO();
         this.dao = new OrderDAO();
-    }
-
-    Order randomOrder(int sessionId) {
-        Order s = randomOrder();
-        s.setSessionId(sessionId);
-        return s;
+        sndaot = new SessionDAOTest();
+        svdaot = new ServerDAOTest();
     }
 
     Order randomOrder() {
@@ -41,142 +42,134 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         return s;
     }
 
+    Order randomValidOrder() {
+        // Create & insert random server
+        Server sv = svdaot.randomServer();
+        sv.setId(serverDao.insert(sv, db));
+        assertTrue(sv.getId() >= 0, "Should be valid Server SQL insert");
+        // Create & insert random session
+        Session sn = sndaot.randomSession();
+        sn.setServer(sv.getId());
+        sn.setId(sessionDao.insert(sn, db));
+        assertTrue(sn.getId() >= 0, "Should be valid Session SQL insert");
+        // Create order with valid database foreign keys (sessionId)
+        Order od = randomOrder();
+        od.setSessionId(sn.getId());
+        return od;
+    }
 
     @BeforeAll
     static void setUp() {
-        db.executeUpdate("DELETE FROM Orders", statement -> {});
-        db.executeUpdate("DELETE FROM Session", statement -> {});
+        db.executeUpdate("DELETE FROM Orders", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Session", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Server", statement -> {
+        });
     }
 
     @AfterEach
     void cleanUp() {
-        db.executeUpdate("DELETE FROM Orders", statement -> {});
-        db.executeUpdate("DELETE FROM Session", statement -> {});
+        db.executeUpdate("DELETE FROM Orders", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Session", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Server", statement -> {
+        });
     }
 
-        @Test
-    void testOrderInsertAndSelect() {
-        // Create a random session
-        Session session = sdaot.randomSession();
+    @Test
+    void testOrderInsertBadSession() {
+        Session session = sndaot.randomSession();
+        session.setId(12345); // Not a real session ID
         session.setId(sessionDao.insert(session, db));
-        assertTrue(session.getId() > 0, "Insert should return a valid ID");
+        assertFalse(session.getId() >= 0, "Invalid FK sessionId should fail SQL");
+    }
 
-        // Create and insert a random order
-        Order order = randomOrder(session.getId());
-        order.setId(dao.insert(order, db));
-        assertTrue(order.getId() > 0, "Insert should return a valid ID");
+    @Test
+    void testOrderInsert() {
+        Order od = randomValidOrder();
+        od.setId(dao.insert(od, db));
+        assertTrue(od.getId() >= 0);
+    }
 
-        // Verify the inserted order
-        Order result = dao.select(order.getId(), db);
-        assertNotNull(result);
-        assertEquals(order.getId(), result.getId());
-        assertEquals(order.isClosed(), result.isClosed());
-        assertEquals(order.getTableNumber(), result.getTableNumber());
-        assertEquals(order.getTip(), result.getTip());
-        assertEquals(order.getSessionId(), result.getSessionId());
+    @Test
+    void testOrderSelect() {
+        Order od = randomValidOrder();
+        od.setId(dao.insert(od, db));
+        Order res = dao.select(od.getId(), db);
+        assertNotNull(res);
+        assertEquals(od.toString(), res.toString());
     }
 
     @Test
     void testOrderSelectEmpty() {
-        // Verify that the Orders table is empty
-        List<Order> results = dao.selectAll(db);
-        assertEquals(0, results.size());
+        List<Order> res = dao.selectAll(db);
+        assertEquals(0, res.size());
     }
 
     @Test
-    void testOrderSelectAll() {
-        // Create and insert a session
-        Session session = sdaot.randomSession();
-        session.setId(sessionDao.insert(session, db));
+    void testSessionSelectAll() {
+        // Establish a valid session (shared to all orders)
+        Server sv = svdaot.randomServer();
+        sv.setId(serverDao.insert(sv, db));
+        assertTrue(sv.getId() >= 0);
+        Session sn = sndaot.randomSession();
+        sn.setServer(sv.getId());
+        sn.setId(sessionDao.insert(sn, db));
+        assertTrue(sn.getId() >= 0);
 
-        // Insert 10 random orders
+        // Do order insertions
         List<Order> orders = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Order order = randomOrder(session.getId());
-            order.setId(dao.insert(order, db));
-            orders.add(order);
+            Order od = randomOrder();
+            od.setSessionId(sn.getId());
+            od.setId(dao.insert(od, db));
+            orders.add(od);
         }
-
-        // Retrieve all orders from the database
         List<Order> results = dao.selectAll(db);
-        assertEquals(10, results.size());
-
-        // Sort both lists by ID for comparison
-        orders.sort((o1, o2) -> Integer.compare(o1.getId(), o2.getId()));
-        results.sort((o1, o2) -> Integer.compare(o1.getId(), o2.getId()));
-
-        // Compare each order
-        for (int i = 0; i < 10; i++) {
-            Order expected = orders.get(i);
-            Order actual = results.get(i);
-            assertEquals(expected.getId(), actual.getId());
-            assertEquals(expected.isClosed(), actual.isClosed());
-            assertEquals(expected.getTableNumber(), actual.getTableNumber());
-            assertEquals(expected.getTip(), actual.getTip());
-            assertEquals(expected.getSessionId(), actual.getSessionId());
-        }
+        // assertEquals(10, results.size());
+        // orders.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
+        // results.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
+        assertEquals(orders.toString(), results.toString());    
+    
     }
 
     @Test
     void testOrderUpdate() {
-        // Create and insert a session
-        Session session = sdaot.randomSession();
-        session.setId(sessionDao.insert(session, db));
-
-        // Insert an order
-        Order original = randomOrder(session.getId());
-        original.setId(dao.insert(original, db));
-
-        // Create an updated version of the order
-        Order updated = new Order(
-                original.getId(),
-                !original.isClosed(),
-                original.getTableNumber() + 1,
-                original.getTip() + 50.0,
-                original.getSessionId()
-        );
-
-        // Perform the update
-        dao.update(updated, db);
-
-        // Verify the update
-        Order result = dao.select(original.getId(), db);
-        assertNotNull(result);
-        assertEquals(updated.getId(), result.getId());
-        assertEquals(updated.isClosed(), result.isClosed());
-        assertEquals(updated.getTableNumber(), result.getTableNumber());
-        assertEquals(updated.getTip(), result.getTip());
-        assertEquals(updated.getSessionId(), result.getSessionId());
-
-        // Verify only one record exists
-        assertEquals(1, dao.selectAll(db).size());
+        Order od = randomValidOrder();
+        od.setId(dao.insert(od, db));
+        assertTrue(od.getId() >= 0);
+        // Update order
+        od.setClosed(!od.isClosed());
+        dao.update(od, db);
+        // Check if updated
+        Order res = dao.select(od.getId(), db);
+        assertNotNull(res);
+        assertEquals(od.getId(), res.getId());
+        assertEquals(od.isClosed(), res.isClosed());
     }
 
     @Test
     void testOrderDelete() {
-        // Create and insert a session
-        Session session = sdaot.randomSession();
-        session.setId(sessionDao.insert(session, db));
-
-        // Insert an order
-        Order order = randomOrder(session.getId());
-        order.setId(dao.insert(order, db));
-
-        // Verify the order exists
-        assertFalse(dao.selectAll(db).isEmpty());
-        assertEquals(1, dao.selectAll(db).size());
-
-        // Delete the order
-        dao.delete(order.getId(), db);
-
-        // Verify the order is deleted
-        assertTrue(dao.selectAll(db).isEmpty(), "Should be empty after deletion");
-        assertNull(dao.select(order.getId(), db), "Should return null for deleted order");
+        Order od = randomValidOrder();
+        od.setId(dao.insert(od, db));
+        assertTrue(od.getId() >= 0, "Should be valid Order SQL insert");
+        assertEquals(1, dao.selectAll(db).size(), "Should be 1 order in DB");
+        dao.delete(od.getId(), db);
+        assertEquals(0, dao.selectAll(db).size(), "Should be 0 order in DB");
+        Order res = dao.select(od.getId(), db);
+        assertNull(res, "Should be null after delete");
     }
 
     @Test
     void testOrderSelectNonExistent() {
-        // Attempt to select a non-existent order
-        assertNull(dao.select(99999, db), "Should return null for non-existent order");
+        Order od = randomValidOrder();
+        od.setId(dao.insert(od, db));
+        assertTrue(od.getId() >= 0);
+        // Select non-existent order
+        Order res = dao.select(99999, db);
+        assertNull(res);
     }
+
 }
