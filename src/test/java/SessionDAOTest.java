@@ -39,11 +39,15 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
     static void setUp() {
         db.executeUpdate("DELETE FROM Session", statement -> {
         });
+        db.executeUpdate("DELETE FROM Server", statement -> {
+        });
     }
 
     @AfterEach
     void cleanUp() {
         db.executeUpdate("DELETE FROM Session", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Server", statement -> {
         });
     }
 
