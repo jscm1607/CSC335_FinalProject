@@ -9,14 +9,13 @@ public class FoodDAO implements DAO<Food, Integer> {
 
     @Override
     public int insert(Food entity, DBM db) {
-        return db.executeInsert("INSERT INTO food (id, name, category, cost, inStock, numOrders) VALUES (?, ?, ?, ?, ?, ?)",
+        return db.executeInsert("INSERT INTO food (name, category, cost, inStock, numOrders) VALUES (?, ?, ?, ?, ?)",
                 ps -> {
-                    ps.setInt(1, entity.getId());
-                    ps.setString(2, entity.getName());
-                    ps.setString(3, entity.getCategory().toString());
-                    ps.setDouble(4, entity.getCost());
-                    ps.setBoolean(5, entity.isInStock());
-                    ps.setInt(6, entity.getNumOrders());
+                    ps.setString(1, entity.getName());
+                    ps.setString(2, entity.getCategory().toString());
+                    ps.setDouble(3, entity.getCost());
+                    ps.setBoolean(4, entity.isInStock());
+                    ps.setInt(5, entity.getNumOrders());
                 });
     }
 
