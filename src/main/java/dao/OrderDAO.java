@@ -9,13 +9,12 @@ public class OrderDAO implements DAO<Order, Integer> {
 
     @Override
     public int insert(Order entity, DBM db) {
-        return db.executeInsert("INSERT INTO Orders (id, closed, tableNumber, tip, sessionId) VALUES (?, ?, ?, ?, ?)",
+        return db.executeInsert("INSERT INTO Orders (closed, tableNumber, tip, sessionId) VALUES (?, ?, ?, ?)",
                 ps -> {
-                    ps.setInt(1, entity.getId());
-                    ps.setBoolean(2, entity.isClosed());
-                    ps.setInt(3, entity.getTableNumber());
-                    ps.setDouble(4, entity.getTip());
-                    ps.setInt(5, entity.getSessionId());
+                    ps.setBoolean(1, entity.isClosed());
+                    ps.setInt(2, entity.getTableNumber());
+                    ps.setDouble(3, entity.getTip());
+                    ps.setInt(4, entity.getSessionId());
                 });
     }
 

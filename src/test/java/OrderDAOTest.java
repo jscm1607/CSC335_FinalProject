@@ -109,7 +109,7 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     }
 
     @Test
-    void testSessionSelectAll() {
+    void testOrderSelectAll() {
         // Establish a valid session (shared to all orders)
         Server sv = svdaot.randomServer();
         sv.setId(serverDao.insert(sv, db));
