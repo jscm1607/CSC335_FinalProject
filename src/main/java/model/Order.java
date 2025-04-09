@@ -6,14 +6,17 @@ public class Order {
 	private boolean closed;
 	private int tableNumber;
 	private double tip;
+	private int sessionId;
 	
 	// CONSTRUCTOR
-	public Order(int id, boolean closed, int tableNumber, double tip) {
+	public Order() {}
+	public Order(int id, boolean closed, int tableNumber, double tip, int sessionId) {
 		super();
 		this.id = id;
 		this.closed = closed;
 		this.tableNumber = tableNumber;
 		this.tip = tip;
+		this.sessionId = sessionId;
 	}
 
 	// SETTERS AND GETTERS
@@ -48,13 +51,22 @@ public class Order {
 	public void setTip(double tip) {
 		this.tip = tip;
 	}
+
+	public int getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(int sessionId) {
+		this.sessionId = sessionId;
+	}
 	
 	@Override
 	public String toString() {
-	    return "Order{id=" + id +
-	           ", closed=" + closed +
-	           ", tableNumber=" + tableNumber +
-	           ", tip=" + tip + '}';
+		return "Order{id=" + id +
+			   ", closed=" + closed +
+			   ", tableNumber=" + tableNumber +
+			   ", tip=" + tip +
+			   ", sessionId=" + sessionId + '}';
 	}
 
 	

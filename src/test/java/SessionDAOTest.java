@@ -27,7 +27,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         this.serverDao = new ServerDAO();
     }
 
-    private Session randomSession() {
+    Session randomSession() {
         Session s = new Session();
         s.setDate(new Date());
         s.setTotalTips(Math.random() * 500);
