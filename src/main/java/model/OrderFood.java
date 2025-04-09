@@ -2,19 +2,22 @@ package model;
 
 public class OrderFood {
 	// INSTANCE VARIABLES
+	private int id;
 	private int seat;
 	private int quantity;
-	private Food food;
-	private Order order;
+	private int foodId;
+	private int orderId;
 	private String[] modifications;
 	
 	// CONSTRUCTOR
-	public OrderFood(int seat, int quantity, Food food, Order order, String[] modifications) {
+	public OrderFood() {}
+	public OrderFood(int id, int seat, int quantity, int foodId, int orderId, String[] modifications) {
 		super();
+		this.id = id;
 		this.seat = seat;
 		this.quantity = quantity;
-		this.food = food;
-		this.order = order;
+		this.foodId = foodId;
+		this.orderId = orderId;
 		this.modifications = modifications;
 	}
 
@@ -35,20 +38,20 @@ public class OrderFood {
 		this.quantity = quantity;
 	}
 
-	public Food getFood() {
-		return food;
+	public int getFoodId() {
+		return foodId;
 	}
 
-	public void setFood(Food food) {
-		this.food = food;
+	public void setFoodId(int foodId) {
+		this.foodId = foodId;
 	}
 
-	public Order getOrder() {
-		return order;
+	public int getOrderId() {
+		return orderId;
 	}
 
-	public void setOrder(Order order) {
-		this.order = order;
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
 	}
 
 	public String[] getModifications() {
@@ -58,13 +61,22 @@ public class OrderFood {
 	public void setModifications(String[] modifications) {
 		this.modifications = modifications;
 	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
 	@Override
 	public String toString() {
-	    return "OrderFood{seat=" + seat +
+	    return "OrderFood{id=" + id +
+	           ",seat=" + seat +
 	           ", quantity=" + quantity +
-	           ", food=" + (food != null ? food.getName() : "null") +
-	           ", orderId=" + (order != null ? order.getId() : "null") +
+	           ", food=" + foodId +
+	           ", orderId=" + orderId +
 	           ", modifications=" + (modifications != null ? String.join(", ", modifications) : "[]") + '}';
 	}
 

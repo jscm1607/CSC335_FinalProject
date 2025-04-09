@@ -17,7 +17,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         this.dao = new FoodDAO();
     }
 
-    private Food randomFood() {
+    public  Food randomFood() {
         Food fd = new Food();
         fd.setName("Food" + System.currentTimeMillis());
         fd.setCategory(Food.Category.values()[(int) (Math.random() * Food.Category.values().length)]);
