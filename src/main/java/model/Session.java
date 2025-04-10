@@ -2,24 +2,37 @@ package model;
 
 import java.util.Date;
 
+import dao.SessionDAO;
+
+
 public class Session {
+	private static final SessionDAO dao = new SessionDAO();
+
 	// INSTANCE VARIABLES
-	private Date date;
-	private int serverId;
-	private double totalTips;
-	private boolean open;
-	private int id;
-	
-	public Session(){}
+	private final Date date;
+	private final int serverId;
+	private final double totalTips;
+	private final boolean open;
+	private final int id;
 
 	// CONSTRUCTOR
 	public Session(int id, Date date, int serverId, double totalTips, boolean open) {
 		super();
-		this.id = id;
 		this.date = date;
 		this.serverId = serverId;
 		this.totalTips = totalTips;
 		this.open = open;
+		this.id = id;
+	}
+
+	// CONSTRUCTOR
+	public Session(Date date, int serverId, double totalTips, boolean open) {
+		super();
+		this.date = date;
+		this.serverId = serverId;
+		this.totalTips = totalTips;
+		this.open = open;
+		this.id = dao.insert(this);
 	}
 
 	// SETTERS AND GETTERS
@@ -27,40 +40,44 @@ public class Session {
 		return date;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public Session setDate(Date date) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
 	public int getServer() {
 		return serverId;
 	}
 
-	public void setServer(int serverId) {
-		this.serverId = serverId;
+	public Session setServer(int serverId) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
 	public double getTotalTips() {
 		return totalTips;
 	}
 
-	public void setTotalTips(double totalTips) {
-		this.totalTips = totalTips;
+	public Session setTotalTips(double totalTips) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
 	public boolean isOpen() {
 		return open;
 	}
 
-	public void setOpen(boolean open) {
-		this.open = open;
+	public Session setOpen(boolean open) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	@Override

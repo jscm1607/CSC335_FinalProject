@@ -5,10 +5,15 @@ import java.util.List;
 
 import model.Order;
 
-public class OrderDAO implements DAO<Order, Integer> {
+public class OrderDAO extends DAO<Order, Integer> {
+
+    public OrderDAO(){}
+    public OrderDAO(DBM db){
+        super(db);
+    }
 
     @Override
-    public int insert(Order entity, DBM db) {
+    public int insert(Order entity) {
         return db.executeInsert("INSERT INTO Orders (closed, tableNumber, tip, sessionId) VALUES (?, ?, ?, ?)",
                 ps -> {
                     ps.setBoolean(1, entity.isClosed());
@@ -19,7 +24,7 @@ public class OrderDAO implements DAO<Order, Integer> {
     }
 
     @Override
-    public void update(Order entity, DBM db) {
+    public void update(Order entity) {
         db.executeUpdate("UPDATE Orders SET closed = ?, tableNumber = ?, tip = ?, sessionId = ? WHERE id = ?",
                 ps -> {
                     ps.setBoolean(1, entity.isClosed());
@@ -31,32 +36,33 @@ public class OrderDAO implements DAO<Order, Integer> {
     }
 
     @Override
-    public Order select(Integer id, DBM db) {
+    public Order select(Integer id) {
         return db.executeQuery("SELECT * FROM Orders WHERE id = ?", ps -> ps.setInt(1, id), rs -> {
             if (rs.next()) {
-                Order order = new Order();
-                order.setId(rs.getInt("id"));
-                order.setClosed(rs.getBoolean("closed"));
-                order.setTableNumber(rs.getInt("tableNumber"));
-                order.setTip(rs.getDouble("tip"));
-                order.setSessionId(rs.getInt("sessionId"));
-                return order;
+                return new Order(
+                    rs.getInt("id"),
+                    rs.getBoolean("closed"),
+                    rs.getInt("tableNumber"),
+                    rs.getDouble("tip"),
+                    rs.getInt("sessionId")
+                );
             }
             return null;
         });
     }
 
     @Override
-    public List<Order> selectAll(DBM db) {
+    public List<Order> selectAll() {
         return db.executeQuery("SELECT * FROM Orders", ps -> {}, rs -> {
             List<Order> orders = new ArrayList<>();
             while (rs.next()) {
-                Order order = new Order();
-                order.setId(rs.getInt("id"));
-                order.setClosed(rs.getBoolean("closed"));
-                order.setTableNumber(rs.getInt("tableNumber"));
-                order.setTip(rs.getDouble("tip"));
-                order.setSessionId(rs.getInt("sessionId"));
+                Order order = new Order(
+                    rs.getInt("id"),
+                    rs.getBoolean("closed"),
+                    rs.getInt("tableNumber"),
+                    rs.getDouble("tip"),
+                    rs.getInt("sessionId")
+                );
                 orders.add(order);
             }
             return orders;
@@ -64,7 +70,7 @@ public class OrderDAO implements DAO<Order, Integer> {
     }
 
     @Override
-    public void delete(Integer id, DBM db) {
+    public void delete(Integer id) {
         db.executeUpdate("DELETE FROM Orders WHERE id = ?", ps -> ps.setInt(1, id));
     }
 }

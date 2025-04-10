@@ -4,10 +4,15 @@ import java.util.List;
 
 import model.Server;
 
-public class ServerDAO implements DAO<Server, String> {
+public class ServerDAO extends  DAO<Server, String> {
+
+    public ServerDAO(){}
+    public ServerDAO(DBM db){
+        super(db);
+    }
 
     @Override
-    public int insert(Server entity, DBM db) {
+    public int insert(Server entity) {
         return db.executeInsert("INSERT INTO Server (username, password) VALUES (?, ?)", 
             statement -> {
                 statement.setString(1, entity.getUsername());
@@ -16,7 +21,7 @@ public class ServerDAO implements DAO<Server, String> {
     }
 
     @Override
-    public void update(Server entity, DBM db) {
+    public void update(Server entity) {
         db.executeUpdate("UPDATE Server SET password = ? WHERE username = ?", 
             statement -> {
                 statement.setString(1, entity.getPassword());
@@ -25,14 +30,14 @@ public class ServerDAO implements DAO<Server, String> {
     }
 
     @Override
-    public Server select(String id, DBM db) {
+    public Server select(String id) {
         return db.executeQuery("SELECT * FROM Server WHERE username = ?", 
             statement -> statement.setString(1, id), 
             resultSet -> resultSet.next() ? new Server(resultSet.getInt("id"),resultSet.getString("username"), resultSet.getString("password")) : null);
     }
 
     @Override
-    public List<Server> selectAll(DBM db) {
+    public List<Server> selectAll() {
         return db.executeQuery("SELECT * FROM Server", 
             statement -> {}, 
             resultSet -> {
@@ -45,7 +50,7 @@ public class ServerDAO implements DAO<Server, String> {
     }
 
     @Override
-    public void delete(String id, DBM db) {
+    public void delete(String id) {
         db.executeUpdate("DELETE FROM Server WHERE username = ?", 
             statement -> statement.setString(1, id));
     }

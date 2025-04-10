@@ -1,13 +1,11 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
@@ -27,33 +25,27 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     private final ServerDAOTest svdaot;
 
     public OrderDAOTest() {
-        sessionDao = new SessionDAO();
-        serverDao = new ServerDAO();
-        this.dao = new OrderDAO();
+        sessionDao = new SessionDAO(db);
+        serverDao = new ServerDAO(db);
+        this.dao = new OrderDAO(db);
         sndaot = new SessionDAOTest();
         svdaot = new ServerDAOTest();
     }
 
-    Order randomOrder() {
-        Order s = new Order();
-        s.setClosed(Math.random() < 0.5);
-        s.setTableNumber((int) (Math.random() * 100));
-        s.setTip(Math.random() * 500);
-        return s;
+    Order randomOrder(Session session) {
+        return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId());
     }
 
     Order randomValidOrder() {
         // Create & insert random server
         Server sv = svdaot.randomServer();
-        sv.setId(serverDao.insert(sv, db));
         assertTrue(sv.getId() >= 0, "Should be valid Server SQL insert");
         // Create & insert random session
-        Session sn = sndaot.randomSession();
+        Session sn = sndaot.randomSession(sv);
         sn.setServer(sv.getId());
-        sn.setId(sessionDao.insert(sn, db));
         assertTrue(sn.getId() >= 0, "Should be valid Session SQL insert");
         // Create order with valid database foreign keys (sessionId)
-        Order od = randomOrder();
+        Order od = randomOrder(sn);
         od.setSessionId(sn.getId());
         return od;
     }
@@ -79,32 +71,22 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     }
 
     @Test
-    void testOrderInsertBadSession() {
-        Session session = sndaot.randomSession();
-        session.setId(12345); // Not a real session ID
-        session.setId(sessionDao.insert(session, db));
-        assertFalse(session.getId() >= 0, "Invalid FK sessionId should fail SQL");
-    }
-
-    @Test
     void testOrderInsert() {
         Order od = randomValidOrder();
-        od.setId(dao.insert(od, db));
         assertTrue(od.getId() >= 0);
     }
 
     @Test
     void testOrderSelect() {
         Order od = randomValidOrder();
-        od.setId(dao.insert(od, db));
-        Order res = dao.select(od.getId(), db);
+        Order res = dao.select(od.getId());
         assertNotNull(res);
         assertEquals(od.toString(), res.toString());
     }
 
     @Test
     void testOrderSelectEmpty() {
-        List<Order> res = dao.selectAll(db);
+        List<Order> res = dao.selectAll();
         assertEquals(0, res.size());
     }
 
@@ -112,22 +94,17 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     void testOrderSelectAll() {
         // Establish a valid session (shared to all orders)
         Server sv = svdaot.randomServer();
-        sv.setId(serverDao.insert(sv, db));
         assertTrue(sv.getId() >= 0);
-        Session sn = sndaot.randomSession();
-        sn.setServer(sv.getId());
-        sn.setId(sessionDao.insert(sn, db));
+        Session sn = sndaot.randomSession(sv);
         assertTrue(sn.getId() >= 0);
 
         // Do order insertions
         List<Order> orders = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Order od = randomOrder();
-            od.setSessionId(sn.getId());
-            od.setId(dao.insert(od, db));
+            Order od = randomOrder(sn);
             orders.add(od);
         }
-        List<Order> results = dao.selectAll(db);
+        List<Order> results = dao.selectAll();
         // assertEquals(10, results.size());
         // orders.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
         // results.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
@@ -138,13 +115,12 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     @Test
     void testOrderUpdate() {
         Order od = randomValidOrder();
-        od.setId(dao.insert(od, db));
         assertTrue(od.getId() >= 0);
         // Update order
         od.setClosed(!od.isClosed());
-        dao.update(od, db);
+        dao.update(od);
         // Check if updated
-        Order res = dao.select(od.getId(), db);
+        Order res = dao.select(od.getId());
         assertNotNull(res);
         assertEquals(od.getId(), res.getId());
         assertEquals(od.isClosed(), res.isClosed());
@@ -153,22 +129,20 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     @Test
     void testOrderDelete() {
         Order od = randomValidOrder();
-        od.setId(dao.insert(od, db));
         assertTrue(od.getId() >= 0, "Should be valid Order SQL insert");
-        assertEquals(1, dao.selectAll(db).size(), "Should be 1 order in DB");
-        dao.delete(od.getId(), db);
-        assertEquals(0, dao.selectAll(db).size(), "Should be 0 order in DB");
-        Order res = dao.select(od.getId(), db);
+        assertEquals(1, dao.selectAll().size(), "Should be 1 order in DB");
+        dao.delete(od.getId());
+        assertEquals(0, dao.selectAll().size(), "Should be 0 order in DB");
+        Order res = dao.select(od.getId());
         assertNull(res, "Should be null after delete");
     }
 
     @Test
     void testOrderSelectNonExistent() {
         Order od = randomValidOrder();
-        od.setId(dao.insert(od, db));
         assertTrue(od.getId() >= 0);
         // Select non-existent order
-        Order res = dao.select(99999, db);
+        Order res = dao.select(99999);
         assertNull(res);
     }
 

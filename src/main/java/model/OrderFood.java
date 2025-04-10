@@ -1,16 +1,19 @@
 package model;
 
+import dao.OrderFoodDAO;
+
 public class OrderFood {
+	private static final OrderFoodDAO dao = new OrderFoodDAO();
+
 	// INSTANCE VARIABLES
-	private int id;
-	private int seat;
-	private int quantity;
-	private int foodId;
-	private int orderId;
-	private String[] modifications;
+	private final int id;
+	private final int seat;
+	private final int quantity;
+	private final int foodId;
+	private final int orderId;
+	private final String[] modifications;
 	
 	// CONSTRUCTOR
-	public OrderFood() {}
 	public OrderFood(int id, int seat, int quantity, int foodId, int orderId, String[] modifications) {
 		super();
 		this.id = id;
@@ -21,53 +24,69 @@ public class OrderFood {
 		this.modifications = modifications;
 	}
 
+	public OrderFood(int seat, int quantity, int foodId, int orderId, String[] modifications) {
+		super();
+		this.seat = seat;
+		this.quantity = quantity;
+		this.foodId = foodId;
+		this.orderId = orderId;
+		this.modifications = modifications;
+		this.id = dao.insert(this);
+	}
+
 	// SETTERS AND GETTERS
 	public int getSeat() {
 		return seat;
 	}
 
-	public void setSeat(int seat) {
-		this.seat = seat;
+	public OrderFood setSeat(int seat) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public int getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
+	public OrderFood setQuantity(int quantity) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public int getFoodId() {
 		return foodId;
 	}
 
-	public void setFoodId(int foodId) {
-		this.foodId = foodId;
+	public OrderFood setFoodId(int foodId) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public int getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(int orderId) {
-		this.orderId = orderId;
+	public OrderFood setOrderId(int orderId) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public String[] getModifications() {
 		return modifications;
 	}
 
-	public void setModifications(String[] modifications) {
-		this.modifications = modifications;
+	public OrderFood setModifications(String[] modifications) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 	
 	@Override

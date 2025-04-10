@@ -6,10 +6,15 @@ import java.util.List;
 
 import model.Session;
 
-public class SessionDAO implements DAO<Session, Integer> {
+public class SessionDAO extends DAO<Session, Integer> {
+
+    public SessionDAO(){}
+    public SessionDAO(DBM db){
+        super(db);
+    }
 
     @Override
-    public int insert(Session entity, DBM db) {
+    public int insert(Session entity) {
         return db.executeInsert("INSERT INTO Session (date, serverId, totalTips, open) VALUES (?, ?, ?, ?)",
                 statement -> {
                     statement.setTimestamp(1, new Timestamp(entity.getDate().getTime()));
@@ -20,7 +25,7 @@ public class SessionDAO implements DAO<Session, Integer> {
     }
 
     @Override
-    public void update(Session entity, DBM db) {
+    public void update(Session entity) {
         db.executeUpdate("UPDATE Session SET date = ?, serverId = ?, totalTips = ?, open = ? WHERE id = ?",
                 statement -> {
                     statement.setTimestamp(1, new Timestamp(entity.getDate().getTime()));
@@ -32,7 +37,7 @@ public class SessionDAO implements DAO<Session, Integer> {
     }
 
     @Override
-    public Session select(Integer id, DBM db) {
+    public Session select(Integer id) {
         return db.executeQuery("SELECT * FROM Session WHERE id = ?",
                 statement -> statement.setInt(1, id),
                 resultSet -> resultSet.next() 
@@ -46,7 +51,7 @@ public class SessionDAO implements DAO<Session, Integer> {
     }
 
     @Override
-    public List<Session> selectAll(DBM db) {
+    public List<Session> selectAll() {
         return db.executeQuery("SELECT * FROM Session",
                 statement -> {},
                 rs -> {
@@ -65,7 +70,7 @@ public class SessionDAO implements DAO<Session, Integer> {
     }
 
     @Override
-    public void delete(Integer id, DBM db) {
+    public void delete(Integer id) {
         db.executeUpdate("DELETE FROM Session WHERE id = ?",
                 statement -> statement.setInt(1, id));
     }

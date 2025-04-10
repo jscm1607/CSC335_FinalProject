@@ -1,20 +1,27 @@
 package model;
 
+import dao.ServerDAO;
+
 public final class Server {
+	private static final ServerDAO dao = new ServerDAO();
+
 	// INSTANCE VARIABLES
-	private int id;
-	private String username;
-	private String password;
+	private final int id;
+	private final String username;
+	private final String password;
 
 	// CONSTRUCTOR
-
-	public Server() {
-	}
 
 	public Server(int id, String username, String password) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
+	}
+
+	public Server(String username, String password) {
+		this.username = username;
+		this.password = password;
+		this.id = dao.insert(this);
 	}
 
 	// GETTERS
@@ -31,17 +38,17 @@ public final class Server {
 		return id;
 	}
 
-	// SETTERS
-	public void setId(int id) {
-		this.id = id;
+
+	public Server setUsername(String username) {
+		Server out = new Server(id, username, password);
+		dao.update(this);
+		return out;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public Server setPassword(String password) {
+		Server out = new Server(id, username, password);
+		dao.update(this);
+		return out;
 	}
 
 	@Override

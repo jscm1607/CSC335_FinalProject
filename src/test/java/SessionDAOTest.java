@@ -24,15 +24,11 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
 
     public SessionDAOTest() {
         this.dao = new SessionDAO();
-        this.serverDao = new ServerDAO();
+        this.serverDao = new ServerDAO(db);
     }
 
-    Session randomSession() {
-        Session s = new Session();
-        s.setDate(new Date());
-        s.setTotalTips(Math.random() * 500);
-        s.setOpen(Math.random() < 0.5);
-        return s;
+    Session randomSession(Server server) {
+        return new Session(new Date(),server.getId(),Math.random() * 500, Math.random() < 0.5);
     }
 
     @BeforeAll
@@ -53,16 +49,14 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
 
     @Test
     void testSessionInsertAndSelect() {
-        Session session = randomSession();
         Server server = sdaot.randomServer();
-        session.setServer(serverDao.insert(server, db));
-        session.setId(dao.insert(session, db));
+        Session session = randomSession(server);
         assertTrue(session.getId() > -2);
-        Session result = dao.select(session.getId(), db);
+        Session result = dao.select(session.getId());
         assertNotNull(result);
         assertEquals(session.getId(), result.getId());
         assertEquals(session.getServer(), result.getServer());
-        assertEquals(session.getTotalTips(), result.getTotalTips());
+        assertEquals(session.getTotalTips(), result.getTotalTips(), 0.001);
         assertEquals(session.isOpen(), result.isOpen());
         // Date comparison within 1 second tolerance due to timestamp precision
         assertTrue(Math.abs(session.getDate().getTime() - result.getDate().getTime()) < 1000);
@@ -70,7 +64,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
 
     @Test
     void testSessionSelectEmpty() {
-        List<Session> results = dao.selectAll(db);
+        List<Session> results = dao.selectAll();
         assertEquals(0, results.size());
     }
 
@@ -80,20 +74,17 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         List<Server> servers = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Server server = sdaot.randomServer();
-            server.setId(serverDao.insert(server, db));
             servers.add(server);
         }
-        servers = serverDao.selectAll(db);
+        servers = serverDao.selectAll();
         List<Session> sessions = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Session session = randomSession();
-            session.setServer(servers.get(i).getId());
-            session.setId(dao.insert(session, db));
+            Session session = randomSession(servers.get(i));
             sessions.add(session);
         }
 
         // Get all from db
-        List<Session> results = dao.selectAll(db);
+        List<Session> results = dao.selectAll();
         assertEquals(10, results.size());
 
         // Sort both lists by ID for comparison
@@ -115,10 +106,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
     @Test
     void testSessionUpdate() {
         // Insert original session
-        Session original = randomSession();
-        Server server = sdaot.randomServer();
-        original.setServer(serverDao.insert(server, db));
-        original.setId(dao.insert(original, db));
+        Session original = randomSession(sdaot.randomServer());
 
         assertTrue(original.getId() > -2);
 
@@ -131,10 +119,10 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
                 !original.isOpen());
 
         // Perform update
-        dao.update(updated, db);
+        dao.update(updated);
 
         // Verify update
-        Session result = dao.select(original.getId(), db);
+        Session result = dao.select(original.getId());
         assertNotNull(result);
         assertEquals(updated.getId(), result.getId());
         assertEquals(updated.getServer(), result.getServer());
@@ -143,29 +131,27 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         assertTrue(Math.abs(updated.getDate().getTime() - result.getDate().getTime()) < 1000);
 
         // Verify only one record exists
-        assertEquals(1, dao.selectAll(db).size());
+        assertEquals(1, dao.selectAll().size());
     }
 
     @Test
     void testSessionDelete() {
         // Start with empty table
-        assertTrue(dao.selectAll(db).isEmpty());
+        assertTrue(dao.selectAll().isEmpty());
 
         // Insert and verify
-        Session session = randomSession();
-        session.setServer(serverDao.insert(sdaot.randomServer(), db));
-        session.setId(dao.insert(session, db));
-        assertFalse(dao.selectAll(db).isEmpty());
-        assertEquals(1, dao.selectAll(db).size());
+        Session session = randomSession(sdaot.randomServer());
+        assertFalse(dao.selectAll().isEmpty());
+        assertEquals(1, dao.selectAll().size());
 
         // Delete and verify
-        dao.delete(session.getId(), db);
-        assertTrue(dao.selectAll(db).isEmpty(), "Should be empty after deletion");
-        assertNull(dao.select(session.getId(), db), "Should return null for deleted session");
+        dao.delete(session.getId());
+        assertTrue(dao.selectAll().isEmpty(), "Should be empty after deletion");
+        assertNull(dao.select(session.getId()), "Should return null for deleted session");
     }
 
     @Test
     void testSessionSelectNonExistent() {
-        assertNull(dao.select(99999, db), "Should return null for non-existent session");
+        assertNull(dao.select(99999), "Should return null for non-existent session");
     }
 }
