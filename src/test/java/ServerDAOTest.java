@@ -14,7 +14,7 @@ import model.Server;
 @Testable
 public class ServerDAOTest extends DAOTest<ServerDAO> {
     public ServerDAOTest() {
-        this.dao = new ServerDAO();
+        this.dao = new ServerDAO(db);
     }
 
     public Server randomServer() {
@@ -84,7 +84,6 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
     void testServerDelete() {
         assertTrue(dao.selectAll().isEmpty());
         Server s = randomServer();
-        dao.insert(s);
         List<Server> res = dao.selectAll();
         assertEquals(1, res.size());
         assertEquals(s.getPassword(), dao.select(s.getUsername()).getPassword());

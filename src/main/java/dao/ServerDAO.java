@@ -6,6 +6,11 @@ import model.Server;
 
 public class ServerDAO extends  DAO<Server, String> {
 
+    public ServerDAO(){}
+    public ServerDAO(DBM db){
+        super(db);
+    }
+
     @Override
     public int insert(Server entity) {
         return db.executeInsert("INSERT INTO Server (username, password) VALUES (?, ?)", 

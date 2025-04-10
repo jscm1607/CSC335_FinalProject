@@ -25,9 +25,9 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     private final ServerDAOTest svdaot;
 
     public OrderDAOTest() {
-        sessionDao = new SessionDAO();
-        serverDao = new ServerDAO();
-        this.dao = new OrderDAO();
+        sessionDao = new SessionDAO(db);
+        serverDao = new ServerDAO(db);
+        this.dao = new OrderDAO(db);
         sndaot = new SessionDAOTest();
         svdaot = new ServerDAOTest();
     }
@@ -96,14 +96,12 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         Server sv = svdaot.randomServer();
         assertTrue(sv.getId() >= 0);
         Session sn = sndaot.randomSession(sv);
-        sn.setServer(sv.getId());
         assertTrue(sn.getId() >= 0);
 
         // Do order insertions
         List<Order> orders = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Order od = randomOrder(sn);
-            od.setSessionId(sn.getId());
             orders.add(od);
         }
         List<Order> results = dao.selectAll();

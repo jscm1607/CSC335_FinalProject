@@ -8,6 +8,11 @@ import model.Session;
 
 public class SessionDAO extends DAO<Session, Integer> {
 
+    public SessionDAO(){}
+    public SessionDAO(DBM db){
+        super(db);
+    }
+
     @Override
     public int insert(Session entity) {
         return db.executeInsert("INSERT INTO Session (date, serverId, totalTips, open) VALUES (?, ?, ?, ?)",

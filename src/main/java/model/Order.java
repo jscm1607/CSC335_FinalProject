@@ -41,7 +41,7 @@ public class Order {
 	}
 
 	public Order setClosed(boolean closed) {
-		Order out = new Order(closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId);
 		dao.update(out);
 		return out;
 	}
@@ -51,7 +51,7 @@ public class Order {
 	}
 
 	public Order setTableNumber(int tableNumber) {
-		Order out = new Order(closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId);
 		dao.update(out);
 		return out;
 	}
@@ -61,7 +61,7 @@ public class Order {
 	}
 
 	public Order setTip(double tip) {
-		Order out = new Order(closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId);
 		dao.update(out);
 		return out;
 	}
@@ -71,7 +71,7 @@ public class Order {
 	}
 
 	public Order setSessionId(int sessionId) {
-		Order out = new Order(closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId);
 		dao.update(out);
 		return out;
 	}

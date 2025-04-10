@@ -24,7 +24,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
 
     public SessionDAOTest() {
         this.dao = new SessionDAO();
-        this.serverDao = new ServerDAO();
+        this.serverDao = new ServerDAO(db);
     }
 
     Session randomSession(Server server) {

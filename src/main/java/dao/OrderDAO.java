@@ -7,6 +7,11 @@ import model.Order;
 
 public class OrderDAO extends DAO<Order, Integer> {
 
+    public OrderDAO(){}
+    public OrderDAO(DBM db){
+        super(db);
+    }
+
     @Override
     public int insert(Order entity) {
         return db.executeInsert("INSERT INTO Orders (closed, tableNumber, tip, sessionId) VALUES (?, ?, ?, ?)",

@@ -26,16 +26,16 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
     private final FoodDAOTest foodDaoTest;
 
     public OrderFoodDAOTest() {
-        this.dao = new OrderFoodDAO();
-        this.orderDao = new OrderDAO();
-        this.foodDao = new FoodDAO();
+        this.dao = new OrderFoodDAO(db);
+        this.orderDao = new OrderDAO(db);
+        this.foodDao = new FoodDAO(db);
         this.orderDaoTest = new OrderDAOTest();
         this.foodDaoTest = new FoodDAOTest();
     }
 
-    private OrderFood randomOrderFood(Food food) {
+    private OrderFood randomOrderFood(Food food, Order order) {
         return new OrderFood((int) (Math.random() * 10), (int) (Math.random() * 10),
-                food.getId(), (int) (Math.random() * 5) + 1,
+                food.getId(),order.getId(),
                 new String[] { "Extra cheese", "No onions" });
     }
 
@@ -46,7 +46,7 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
         assertTrue(order.getId() >= 0, "Should be valid Order SQL insert");
 
         // Create OrderFood with valid foreign keys
-        OrderFood of = randomOrderFood(food);
+        OrderFood of = randomOrderFood(food, order);
         return of;
     }
 
@@ -80,9 +80,9 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
 
     @Test
     void testOrderFoodInsertBadForeignKey() {
-        OrderFood of = randomOrderFood(foodDaoTest.randomFood());
-        of.setFoodId(99999); // Invalid foodId
-        of.setOrderId(99999); // Invalid orderId
+        OrderFood of = randomOrderFood(foodDaoTest.randomFood(), orderDaoTest.randomValidOrder());
+        of = of.setFoodId(99999); // Invalid foodId
+        of = of.setOrderId(99999); // Invalid orderId
         assertFalse(of.getId() > 0, "SQL insert should fail with invalid foreign keys");
     }
 

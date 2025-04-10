@@ -11,9 +11,8 @@ public abstract class DAO<T, ID> {
 
     static DBM db = new DBM("sa", "", "jdbc:h2:./data/db");
 
-    void setDB(DBM db) {
-        DAO.db = db;
-    }
+    public DAO(){};
+    public DAO(DBM db){DAO.db=db;}
 
     abstract int insert(T entity);
 

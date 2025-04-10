@@ -47,7 +47,7 @@ public class Food {
 	}
 
 	public Food setName(String name) {
-		Food out = new Food(name, category, cost, inStock, numOrders);
+		Food out = new Food(id, name, category, cost, inStock, numOrders);
 		dao.update(out);
 		return out;
 	}
@@ -57,7 +57,7 @@ public class Food {
 	}
 
 	public Food setCategory(Category category) {
-		Food out = new Food(name, category, cost, inStock, numOrders);
+		Food out = new Food(id, name, category, cost, inStock, numOrders);
 		dao.update(out);
 		return out;
 	}
@@ -67,7 +67,7 @@ public class Food {
 	}
 
 	public Food setCost(double cost) {
-		Food out = new Food(name, category, cost, inStock, numOrders);
+		Food out = new Food(id, name, category, cost, inStock, numOrders);
 		dao.update(out);
 		return out;
 	}
@@ -77,7 +77,7 @@ public class Food {
 	}
 
 	public Food setInStock(boolean inStock) {
-		Food out = new Food(name, category, cost, inStock, numOrders);
+		Food out = new Food(id, name, category, cost, inStock, numOrders);
 		dao.update(out);
 		return out;
 	}
@@ -87,7 +87,7 @@ public class Food {
 	}
 
 	public Food setNumOrders(int numOrders) {
-		Food out = new Food(name, category, cost, inStock, numOrders);
+		Food out = new Food(id, name, category, cost, inStock, numOrders);
 		dao.update(out);
 		return out;
 	}

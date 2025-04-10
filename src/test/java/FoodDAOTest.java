@@ -15,7 +15,7 @@ import model.Food;
 @Testable
 public class FoodDAOTest extends DAOTest<FoodDAO> {
     public FoodDAOTest() {
-        this.dao = new FoodDAO();
+        this.dao = new FoodDAO(db);
     }
 
     public Food randomFood() {

@@ -6,6 +6,12 @@ import java.util.List;
 import model.OrderFood;
 
 public class OrderFoodDAO extends DAO<OrderFood, Integer> {
+
+    public OrderFoodDAO(){}
+    public OrderFoodDAO(DBM db){
+        super(db);
+    }
+
     @Override
     public int insert(OrderFood entity) {
         return db.executeInsert("INSERT INTO OrderFood (seat, quantity, foodId, orderId, modifications) VALUES (?, ?, ?, ?, ?)",

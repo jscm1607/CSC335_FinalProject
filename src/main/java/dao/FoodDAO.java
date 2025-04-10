@@ -7,6 +7,11 @@ import model.Food;
 
 public class FoodDAO extends DAO<Food, Integer> {
 
+    public FoodDAO(){}
+    public FoodDAO(DBM db){
+        super(db);
+    }
+
     @Override
     public int insert(Food entity) {
         return db.executeInsert("INSERT INTO food (name, category, cost, inStock, numOrders) VALUES (?, ?, ?, ?, ?)",
