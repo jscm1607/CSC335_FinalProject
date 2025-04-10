@@ -1,9 +1,12 @@
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
@@ -30,77 +33,78 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
         this.foodDaoTest = new FoodDAOTest();
     }
 
-    private OrderFood randomOrderFood() {
-        OrderFood of = new OrderFood();
-        of.setSeat((int) (Math.random() * 10));
-        of.setQuantity((int) (Math.random() * 5) + 1);
-        of.setModifications(new String[] { "Extra cheese", "No onions" });
-        return of;
+    private OrderFood randomOrderFood(Food food) {
+        return new OrderFood((int) (Math.random() * 10), (int) (Math.random() * 10),
+                food.getId(), (int) (Math.random() * 5) + 1,
+                new String[] { "Extra cheese", "No onions" });
     }
 
     private OrderFood randomValidOrderFood() {
         Food food = foodDaoTest.randomFood();
-        food.setId(foodDao.insert(food, db));
         assertTrue(food.getId() >= 0, "Should be valid Food SQL insert");
         Order order = orderDaoTest.randomValidOrder();
-        order.setId(orderDao.insert(order, db));
         assertTrue(order.getId() >= 0, "Should be valid Order SQL insert");
 
         // Create OrderFood with valid foreign keys
-        OrderFood of = randomOrderFood();
-        of.setFoodId(food.getId());
-        of.setOrderId(order.getId());
+        OrderFood of = randomOrderFood(food);
         return of;
     }
 
     @BeforeAll
     static void setUp() {
-        db.executeUpdate("DELETE FROM OrderFood", statement -> {});
-        db.executeUpdate("DELETE FROM Orders", statement -> {});
-        db.executeUpdate("DELETE FROM Food", statement -> {});
-        db.executeUpdate("DELETE FROM Server", statement -> {});
-        db.executeUpdate("DELETE FROM Session", statement -> {});
+        db.executeUpdate("DELETE FROM OrderFood", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Orders", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Food", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Server", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Session", statement -> {
+        });
     }
 
     @AfterEach
     void cleanUp() {
-        db.executeUpdate("DELETE FROM OrderFood", statement -> {});
-        db.executeUpdate("DELETE FROM Orders", statement -> {});
-        db.executeUpdate("DELETE FROM Food", statement -> {});
-        db.executeUpdate("DELETE FROM Server", statement -> {});
-        db.executeUpdate("DELETE FROM Session", statement -> {});
+        db.executeUpdate("DELETE FROM OrderFood", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Orders", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Food", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Server", statement -> {
+        });
+        db.executeUpdate("DELETE FROM Session", statement -> {
+        });
     }
 
     @Test
     void testOrderFoodInsertBadForeignKey() {
-        OrderFood of = randomOrderFood();
+        OrderFood of = randomOrderFood(foodDaoTest.randomFood());
         of.setFoodId(99999); // Invalid foodId
         of.setOrderId(99999); // Invalid orderId
-        of.setId(dao.insert(of, db));
-        assertFalse(of.getId() > 0, "SQL insert should fail with invalid foreign keys");    
+        assertFalse(of.getId() > 0, "SQL insert should fail with invalid foreign keys");
     }
 
     @Test
     void testOrderFoodInsert() {
         // Create OrderFood with valid foreign keys
         OrderFood of = randomValidOrderFood();
-        of.setId(dao.insert(of, db));
         assertTrue(of.getId() > 0, "Should be valid OrderFood SQL insert");
     }
 
     @Test
     void testOrderFoodSelect() {
         OrderFood of = randomValidOrderFood();
-        of.setId(dao.insert(of, db));
         assertTrue(of.getId() > 0, "Should be valid OrderFood SQL insert");
-        OrderFood res = dao.select(of.getId(), db);
+        OrderFood res = dao.select(of.getId());
         assertEquals(of.getId(), res.getId());
         assertEquals(of.toString(), res.toString());
     }
 
     @Test
     void testOrderFoodSelectEmpty() {
-        List<OrderFood> res = dao.selectAll(db);
+        List<OrderFood> res = dao.selectAll();
         assertEquals(0, res.size());
     }
 
@@ -109,10 +113,9 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
         List<OrderFood> orderFoods = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             OrderFood of = randomValidOrderFood();
-            of.setId(dao.insert(of, db));
             orderFoods.add(of);
         }
-        List<OrderFood> res = dao.selectAll(db);
+        List<OrderFood> res = dao.selectAll();
         assertEquals(10, res.size());
         orderFoods.sort((o1, o2) -> Integer.compare(o1.getId(), o2.getId()));
         res.sort((o1, o2) -> Integer.compare(o1.getId(), o2.getId()));
@@ -122,17 +125,14 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
     @Test
     void testOrderFoodUpdate() {
         OrderFood of = randomValidOrderFood();
-        of.setId(dao.insert(of, db));
         assertTrue(of.getId() >= 0);
 
         // Update OrderFood
         of.setSeat(of.getSeat() + 1);
         of.setQuantity(of.getQuantity() + 1);
         of.setModifications(new String[] { "No salt" });
-        dao.update(of, db);
-
         // Verify update
-        OrderFood res = dao.select(of.getId(), db);
+        OrderFood res = dao.select(of.getId());
         assertNotNull(res);
         assertEquals(of.toString(), res.toString());
     }
@@ -140,16 +140,15 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
     @Test
     void testOrderFoodDelete() {
         OrderFood of = randomValidOrderFood();
-        of.setId(dao.insert(of, db));
         assertTrue(of.getId() >= 0, "Should be valid OrderFood SQL insert");
-        assertEquals(1, dao.selectAll(db).size(), "Should be 1 OrderFood in DB");
-        dao.delete(of.getId(), db);
-        assertEquals(0, dao.selectAll(db).size(), "Should be 0 OrderFood in DB");
-        assertNull(dao.select(of.getId(), db), "Should return null after delete");
+        assertEquals(1, dao.selectAll().size(), "Should be 1 OrderFood in DB");
+        dao.delete(of.getId());
+        assertEquals(0, dao.selectAll().size(), "Should be 0 OrderFood in DB");
+        assertNull(dao.select(of.getId()), "Should return null after delete");
     }
 
     @Test
     void testOrderFoodSelectNonExistent() {
-        assertNull(dao.select(99999, db), "Should return null for non-existent OrderFood");
+        assertNull(dao.select(99999), "Should return null for non-existent OrderFood");
     }
 }

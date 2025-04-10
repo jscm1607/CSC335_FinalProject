@@ -1,9 +1,10 @@
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
@@ -17,14 +18,14 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         this.dao = new FoodDAO();
     }
 
-    public  Food randomFood() {
-        Food fd = new Food();
-        fd.setName("Food" + System.currentTimeMillis());
-        fd.setCategory(Food.Category.values()[(int) (Math.random() * Food.Category.values().length)]);
-        fd.setCost(Math.random() * 100);
-        fd.setInStock(Math.random() < 0.5);
-        fd.setNumOrders((int) (Math.random() * 100));
-        return fd;
+    public Food randomFood() {
+        return new Food(
+            "Food" + System.currentTimeMillis(),
+            Food.Category.values()[(int) (Math.random() * Food.Category.values().length)],
+            Math.random() * 100,
+            Math.random() < 0.5,
+            (int) (Math.random() * 100)
+        );
     }
 
     @BeforeAll
@@ -40,9 +41,8 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     @Test
     void testFoodInsertAndSelect() {
         Food fd = randomFood();
-        fd.setId(dao.insert(fd, db));
         assertTrue(fd.getId() > -2, "Should be valid Food SQL insert");
-        Food res = dao.select(fd.getId(), db);
+        Food res = dao.select(fd.getId());
         assertEquals(fd.toString(), res.toString());
     }
 
@@ -51,16 +51,15 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         FoodDAO dao = new FoodDAO();
 
         Food fd = test.randomFood();
-        fd.setId(dao.insert(fd, db));
         assertTrue(fd.getId() > -2, "Should be valid Food SQL insert");
-        Food res = dao.select(fd.getId(), db);
+        Food res = dao.select(fd.getId());
         assertEquals(fd.toString(), res.toString());
     }
     
 
     @Test
     void testFoodSelectEmpty() {
-        List<Food> res = dao.selectAll(db);
+        List<Food> res = dao.selectAll();
         assertEquals(0, res.size());
     }
 
@@ -70,11 +69,10 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         List<Food> foods = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Food fd = randomFood();
-            fd.setId(dao.insert(fd, db));
             foods.add(fd);
         }
         // get all from db
-        List<Food> res = dao.selectAll(db);
+        List<Food> res = dao.selectAll();
         assertEquals(10, res.size());
         // sort each list by username, should be equal
         res.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
@@ -85,29 +83,25 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     @Test
     void testFoodUpdate() {
         Food fd = randomFood();
-        Food fd_up = randomFood();
-        fd.setId(dao.insert(fd, db));
-        fd_up.setId(fd.getId()); // set new food with same id
-        dao.update(fd_up, db);
+        Food fd_up = fd.setNumOrders(7);
         // check if updated
-        Food res1 = dao.select(fd.getId(), db);
+        Food res1 = dao.select(fd.getId());
         assertEquals(fd_up.toString(), res1.toString());
         // check no duplicates
-        Food res2 = dao.selectAll(db).get(0);
+        Food res2 = dao.selectAll().get(0);
         assertEquals(fd_up.toString(), res2.toString());
     }
 
     @Test
     void testFoodDelete() {
-        assertTrue(dao.selectAll(db).isEmpty());
+        assertTrue(dao.selectAll().isEmpty());
         Food fd = randomFood();
-        fd.setId(dao.insert(fd, db));
-        List<Food> res = dao.selectAll(db);
+        List<Food> res = dao.selectAll();
         assertFalse(res.isEmpty());
         assertEquals(1, res.size());
         assertEquals(fd.toString(), res.get(0).toString());
-        assertEquals(fd.toString(), dao.select(fd.getId(), db).toString());
-        dao.delete(fd.getId(), db);
-        assertTrue(dao.selectAll(db).isEmpty(), "Should be empty.");
+        assertEquals(fd.toString(), dao.select(fd.getId()).toString());
+        dao.delete(fd.getId());
+        assertTrue(dao.selectAll().isEmpty(), "Should be empty.");
     }
 }

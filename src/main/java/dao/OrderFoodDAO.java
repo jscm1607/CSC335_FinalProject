@@ -5,9 +5,9 @@ import java.util.List;
 
 import model.OrderFood;
 
-public class OrderFoodDAO implements DAO<OrderFood, Integer> {
+public class OrderFoodDAO extends DAO<OrderFood, Integer> {
     @Override
-    public int insert(OrderFood entity, DBM db) {
+    public int insert(OrderFood entity) {
         return db.executeInsert("INSERT INTO OrderFood (seat, quantity, foodId, orderId, modifications) VALUES (?, ?, ?, ?, ?)",
                 ps -> {
                     ps.setInt(1, entity.getSeat());
@@ -19,7 +19,7 @@ public class OrderFoodDAO implements DAO<OrderFood, Integer> {
     }
 
     @Override
-    public void update(OrderFood entity, DBM db) {
+    public void update(OrderFood entity) {
         db.executeUpdate("UPDATE OrderFood SET seat = ?, quantity = ?, foodId = ?, orderId = ?, modifications = ? WHERE id = ?",
                 ps -> {
                     ps.setInt(1, entity.getSeat());
@@ -32,34 +32,35 @@ public class OrderFoodDAO implements DAO<OrderFood, Integer> {
     }
 
     @Override
-    public OrderFood select(Integer id, DBM db) {
+    public OrderFood select(Integer id) {
         return db.executeQuery("SELECT * FROM OrderFood WHERE id = ?", ps -> ps.setInt(1, id), rs -> {
             if (rs.next()) {
-                OrderFood orderFood = new OrderFood();
-                orderFood.setSeat(rs.getInt("seat"));
-                orderFood.setQuantity(rs.getInt("quantity"));
-                orderFood.setFoodId(rs.getInt("foodId"));
-                orderFood.setOrderId(rs.getInt("orderId"));
-                orderFood.setModifications(rs.getString("modifications").split(","));
-                orderFood.setId(id);
-                return orderFood;
+                return new OrderFood(
+                    id,
+                    rs.getInt("seat"),
+                    rs.getInt("quantity"),
+                    rs.getInt("foodId"),
+                    rs.getInt("orderId"),
+                    rs.getString("modifications").split(",")
+                );
             }
             return null;
         });
     }
 
     @Override
-    public List<OrderFood> selectAll(DBM db) {
+    public List<OrderFood> selectAll() {
         return db.executeQuery("SELECT * FROM OrderFood", ps -> {}, rs -> {
             List<OrderFood> orderFoods = new ArrayList<>();
             while (rs.next()) {
-                OrderFood orderFood = new OrderFood();
-                orderFood.setSeat(rs.getInt("seat"));
-                orderFood.setQuantity(rs.getInt("quantity"));
-                orderFood.setFoodId(rs.getInt("foodId"));
-                orderFood.setOrderId(rs.getInt("orderId"));
-                orderFood.setModifications(rs.getString("modifications").split(","));
-                orderFood.setId(rs.getInt("id"));
+                OrderFood orderFood = new OrderFood(
+                    rs.getInt("id"),
+                    rs.getInt("seat"),
+                    rs.getInt("quantity"),
+                    rs.getInt("foodId"),
+                    rs.getInt("orderId"),
+                    rs.getString("modifications").split(",")
+                );
                 orderFoods.add(orderFood);
             }
             return orderFoods;
@@ -67,7 +68,7 @@ public class OrderFoodDAO implements DAO<OrderFood, Integer> {
     }
 
     @Override
-    public void delete(Integer id, DBM db) {
+    public void delete(Integer id) {
         db.executeUpdate("DELETE FROM OrderFood WHERE id = ?", ps -> ps.setInt(1, id));
     }
 }
