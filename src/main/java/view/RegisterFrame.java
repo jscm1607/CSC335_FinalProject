@@ -1,6 +1,5 @@
 package view;
 
-import dao.DBM;
 import dao.ServerDAO;
 import model.Server;
 
@@ -12,13 +11,11 @@ public class RegisterFrame extends JFrame {
 
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private DBM db;
     private ServerDAO serverDAO;
 
     public RegisterFrame() {
         super("Create Server Account");
 
-        this.db = new DBM("sa", "", "jdbc:h2:./data/db");
         this.serverDAO = new ServerDAO();
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -57,13 +54,13 @@ public class RegisterFrame extends JFrame {
             return;
         }
 
-        if (serverDAO.select(username, db) != null) {
+        if (serverDAO.select(username) != null) {
             JOptionPane.showMessageDialog(this, "Username already exists.", "Account Creation Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         Server newServer = new Server(0, username, password);
-        serverDAO.insert(newServer, db); // pass to the db object
+        serverDAO.insert(newServer); // pass to the db object
 
         JOptionPane.showMessageDialog(this, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         dispose();

@@ -4,7 +4,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.time.LocalDateTime;
+import java.util.Date;
 import model.Server;
 import model.Session;
 
@@ -105,8 +105,9 @@ class AssignTablePanel extends JPanel {
             try {
                 int tableNumber = Integer.parseInt(tableNumberField.getText().trim());
                 int seats = Integer.parseInt(seatCountField.getText().trim());
-
-                Session session = new Session(LocalDateTime.now(), server, 0.0, true, new int[]{tableNumber});
+                
+                // creates Session in DB
+                new Session(new Date(), server.getId(), 0.0, true); // FIXME: Note: during merge, changed Session objects to no longer hold ref to "new int[]{tableNumber}"
 
                 app.setLastAssignedTable(tableNumber);
                 app.setSeatCount(seats);

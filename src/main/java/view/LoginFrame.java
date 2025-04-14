@@ -1,7 +1,6 @@
 
 package view;
 
-import dao.DBM;
 import dao.ServerDAO;
 import model.Server;
 
@@ -13,12 +12,10 @@ public class LoginFrame extends JFrame {
 
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private DBM db;
     private ServerDAO serverDAO;
 
     public LoginFrame() {
         super("Server Login");
-        this.db = new DBM("sa", "", "jdbc:h2:./data/db");
         this.serverDAO = new ServerDAO();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +49,7 @@ public class LoginFrame extends JFrame {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
 
-        Server server = serverDAO.select(username, db);
+        Server server = serverDAO.select(username);
         if (server != null && server.getPassword().equals(password)) {
             JOptionPane.showMessageDialog(this, "Login successful! Welcome " + username);
             dispose();
