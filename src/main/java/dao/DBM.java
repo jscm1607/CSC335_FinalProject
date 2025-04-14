@@ -20,6 +20,10 @@ public class DBM {
     private final String PASSWORD;
     private Connection CONNECTION;
 
+    public DBM() {
+        this("sa", "", "jdbc:h2:./data/db");
+    }
+
     public DBM(String user, String password, String url) {
         USER = user;
         PASSWORD = password;

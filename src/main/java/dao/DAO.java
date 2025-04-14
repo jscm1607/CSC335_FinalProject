@@ -9,7 +9,7 @@ import java.util.List;
  */
 public abstract class DAO<T, ID> {
 
-    static DBM db = new DBM("sa", "", "jdbc:h2:./data/db");
+    static DBM db = new DBM();
 
     public DAO(){};
     public DAO(DBM db){DAO.db=db;}
