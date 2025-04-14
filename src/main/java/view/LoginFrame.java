@@ -10,7 +10,11 @@ import java.awt.event.ActionEvent;
 
 public class LoginFrame extends JFrame {
 
-    private JTextField usernameField;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JTextField usernameField;
     private JPasswordField passwordField;
     private ServerDAO serverDAO;
 

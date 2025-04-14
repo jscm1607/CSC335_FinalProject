@@ -6,7 +6,12 @@ import javax.swing.*;
 
 public class DashboardFrame extends JFrame {
 
-    public DashboardFrame(Server server) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public DashboardFrame(Server server) {
         setTitle("Restaurant Dashboard");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
