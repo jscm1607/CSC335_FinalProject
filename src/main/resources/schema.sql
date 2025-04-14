@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS Server (
 
  -- Create Food table
  CREATE TABLE IF NOT EXISTS Food (
-     id INT PRIMARY KEY AUTO_INCREMENT,
+     id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
      name VARCHAR(255) NOT NULL,
      category VARCHAR(50),
      cost DOUBLE,
@@ -15,31 +15,34 @@ CREATE TABLE IF NOT EXISTS Server (
      numOrders INT
  );
  
--- -- Create Order table
--- CREATE TABLE IF NOT EXISTS Orders (
---     id INT PRIMARY KEY AUTO_INCREMENT,
---     closed BOOLEAN,
---     tableNumber INT,
---     tip DOUBLE
--- );
--- 
--- -- Create Session table
--- CREATE TABLE IF NOT EXISTS Session (
---     date TIMESTAMP PRIMARY KEY,
---     serverUsername VARCHAR(255),
---     totalTips DOUBLE,
---     open BOOLEAN,
---     FOREIGN KEY (serverUsername) REFERENCES Server(username)
--- );
--- 
--- -- Create OrderFood table
--- CREATE TABLE IF NOT EXISTS OrderFood (
---     id INT PRIMARY KEY AUTO_INCREMENT,
---     seat INT,
---     quantity INT,
---     foodId INT,
---     orderId INT,
---     modifications VARCHAR(255),
---     FOREIGN KEY (foodId) REFERENCES Food(id),
---     FOREIGN KEY (orderId) REFERENCES Orders(id)
--- );
+-- Create Session table
+CREATE TABLE IF NOT EXISTS Session (
+    id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    date TIMESTAMP,
+    serverId INT,
+    totalTips DOUBLE,
+    open BOOLEAN,
+    FOREIGN KEY (serverId) REFERENCES Server(id)
+);
+
+-- Create Orders table
+CREATE TABLE IF NOT EXISTS Orders (
+    id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    closed BOOLEAN,
+    tableNumber INT,
+    tip DOUBLE,
+    sessionId INT,
+    FOREIGN KEY (sessionId) REFERENCES Session(id)
+);
+
+-- Create OrderFood table
+CREATE TABLE IF NOT EXISTS OrderFood (
+    id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    seat INT,
+    quantity INT,
+    foodId INT,
+    orderId INT,
+    modifications VARCHAR(255),
+    FOREIGN KEY (foodId) REFERENCES Food(id),
+    FOREIGN KEY (orderId) REFERENCES Orders(id)
+);

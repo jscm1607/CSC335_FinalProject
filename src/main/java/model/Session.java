@@ -1,73 +1,91 @@
 package model;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+
+import dao.SessionDAO;
+
 
 public class Session {
+	private static final SessionDAO dao = new SessionDAO();
+
 	// INSTANCE VARIABLES
-	private LocalDateTime date;
-	private Server server;
-	private double totalTips;
-	private boolean open;
-	private int[] tables;
-	
+	private final Date date;
+	private final int serverId;
+	private final double totalTips;
+	private final boolean open;
+	private final int id;
+
 	// CONSTRUCTOR
-	public Session(LocalDateTime date, Server server, double totalTips, boolean open, int[] tables) {
+	public Session(int id, Date date, int serverId, double totalTips, boolean open) {
 		super();
 		this.date = date;
-		this.server = server;
+		this.serverId = serverId;
 		this.totalTips = totalTips;
 		this.open = open;
-		this.tables = tables;
+		this.id = id;
+	}
+
+	// CONSTRUCTOR
+	public Session(Date date, int serverId, double totalTips, boolean open) {
+		super();
+		this.date = date;
+		this.serverId = serverId;
+		this.totalTips = totalTips;
+		this.open = open;
+		this.id = dao.insert(this);
 	}
 
 	// SETTERS AND GETTERS
-	public LocalDateTime getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
-		this.date = date;
+	public Session setDate(Date date) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
-	public Server getServer() {
-		return server;
+	public int getServer() {
+		return serverId;
 	}
 
-	public void setServer(Server server) {
-		this.server = server;
+	public Session setServer(int serverId) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
 	public double getTotalTips() {
 		return totalTips;
 	}
 
-	public void setTotalTips(double totalTips) {
-		this.totalTips = totalTips;
+	public Session setTotalTips(double totalTips) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
 	public boolean isOpen() {
 		return open;
 	}
 
-	public void setOpen(boolean open) {
-		this.open = open;
+	public Session setOpen(boolean open) {
+		Session out = new Session(id, date, serverId, totalTips, open);
+		dao.update(out);
+		return out;
 	}
 
-	public int[] getTables() {
-		return tables;
+	public int getId() {
+		return id;
 	}
 
-	public void setTables(int[] tables) {
-		this.tables = tables;
-	}
-	
 	@Override
 	public String toString() {
-	    return "Session{date=" + date +
-	           ", server=" + (server != null ? server.getUsername() : "null") +
-	           ", totalTips=" + totalTips +
-	           ", open=" + open +
-	           ", tables=" + java.util.Arrays.toString(tables) + '}';
+		return "Session{date=" + date +
+			   ", server=" + serverId +
+			   ", totalTips=" + totalTips +
+			   ", open=" + open;
 	}
 
 	

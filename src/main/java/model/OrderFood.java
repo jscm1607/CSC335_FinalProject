@@ -1,21 +1,37 @@
 package model;
 
+import dao.OrderFoodDAO;
+
 public class OrderFood {
+	private static final OrderFoodDAO dao = new OrderFoodDAO();
+
 	// INSTANCE VARIABLES
-	private int seat;
-	private int quantity;
-	private Food food;
-	private Order order;
-	private String[] modifications;
+	private final int id;
+	private final int seat;
+	private final int quantity;
+	private final int foodId;
+	private final int orderId;
+	private final String[] modifications;
 	
 	// CONSTRUCTOR
-	public OrderFood(int seat, int quantity, Food food, Order order, String[] modifications) {
+	public OrderFood(int id, int seat, int quantity, int foodId, int orderId, String[] modifications) {
+		super();
+		this.id = id;
+		this.seat = seat;
+		this.quantity = quantity;
+		this.foodId = foodId;
+		this.orderId = orderId;
+		this.modifications = modifications;
+	}
+
+	public OrderFood(int seat, int quantity, int foodId, int orderId, String[] modifications) {
 		super();
 		this.seat = seat;
 		this.quantity = quantity;
-		this.food = food;
-		this.order = order;
+		this.foodId = foodId;
+		this.orderId = orderId;
 		this.modifications = modifications;
+		this.id = dao.insert(this);
 	}
 
 	// SETTERS AND GETTERS
@@ -23,48 +39,63 @@ public class OrderFood {
 		return seat;
 	}
 
-	public void setSeat(int seat) {
-		this.seat = seat;
+	public OrderFood setSeat(int seat) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public int getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
+	public OrderFood setQuantity(int quantity) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
-	public Food getFood() {
-		return food;
+	public int getFoodId() {
+		return foodId;
 	}
 
-	public void setFood(Food food) {
-		this.food = food;
+	public OrderFood setFoodId(int foodId) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
-	public Order getOrder() {
-		return order;
+	public int getOrderId() {
+		return orderId;
 	}
 
-	public void setOrder(Order order) {
-		this.order = order;
+	public OrderFood setOrderId(int orderId) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
 	}
 
 	public String[] getModifications() {
 		return modifications;
 	}
 
-	public void setModifications(String[] modifications) {
-		this.modifications = modifications;
+	public OrderFood setModifications(String[] modifications) {
+		OrderFood out = new OrderFood(id, seat, quantity, foodId, modifications);
+		dao.update(out);
+		return out;
+	}
+
+	public int getId() {
+		return id;
 	}
 	
 	@Override
 	public String toString() {
-	    return "OrderFood{seat=" + seat +
+	    return "OrderFood{id=" + id +
+	           ",seat=" + seat +
 	           ", quantity=" + quantity +
-	           ", food=" + (food != null ? food.getName() : "null") +
-	           ", orderId=" + (order != null ? order.getId() : "null") +
+	           ", food=" + foodId +
+	           ", orderId=" + orderId +
 	           ", modifications=" + (modifications != null ? String.join(", ", modifications) : "[]") + '}';
 	}
 

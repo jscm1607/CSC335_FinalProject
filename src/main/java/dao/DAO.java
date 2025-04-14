@@ -7,15 +7,20 @@ import java.util.List;
  * operations between database entities and Java objects.
  * T is the type of the entity, ID is the id value type.
  */
-public interface DAO<T, ID> {
+public abstract class DAO<T, ID> {
 
-    void insert(T entity, DBM db);
+    static DBM db = new DBM();
 
-    void update(T entity, DBM db);
+    public DAO(){};
+    public DAO(DBM db){DAO.db=db;}
 
-    T select(ID id, DBM db);
+    abstract int insert(T entity);
 
-    List<T> selectAll(DBM db);
+    abstract void update(T entity);
 
-    void delete(ID id, DBM db);
+    abstract T select(ID id);
+
+    abstract List<T> selectAll();
+
+    abstract void delete(ID id);
 }

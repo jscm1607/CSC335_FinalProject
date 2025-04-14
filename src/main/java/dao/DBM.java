@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.h2.tools.Server;
 
 /**
@@ -17,6 +19,10 @@ public class DBM {
     private final String USER;
     private final String PASSWORD;
     private Connection CONNECTION;
+
+    public DBM() {
+        this("sa", "", "jdbc:h2:./data/db");
+    }
 
     public DBM(String user, String password, String url) {
         USER = user;
@@ -71,6 +77,26 @@ public class DBM {
             e.printStackTrace();
         }
     }
+
+    public int executeInsert(String query, StatementPreparer preparer){
+        try (PreparedStatement statement = CONNECTION.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            preparer.prepare(statement);
+            if (statement.executeUpdate() > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -2;
+        }
+        return -1;
+    }
+
 
     /**
      * Wrapper of PreparedStatement.executeQuery() abstracting away boilerplate,
