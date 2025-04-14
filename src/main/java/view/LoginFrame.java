@@ -1,3 +1,4 @@
+
 package view;
 
 import dao.DBM;
@@ -48,15 +49,16 @@ public class LoginFrame extends JFrame {
     }
 
     private void handleLogin(ActionEvent e) {
-        String username = usernameField.getText();
+        String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
 
         Server server = serverDAO.select(username, db);
         if (server != null && server.getPassword().equals(password)) {
             JOptionPane.showMessageDialog(this, "Login successful! Welcome " + username);
-            // TODO: Launch the main app screen here
+            dispose();
+            new DashboardFrame(server);
         } else {
-            JOptionPane.showMessageDialog(this, "Invalid credentials", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid credentials", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 

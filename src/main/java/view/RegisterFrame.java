@@ -49,29 +49,27 @@ public class RegisterFrame extends JFrame {
     }
 
     private void handleRegister(ActionEvent e) {
-        String username = usernameField.getText();
+        String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
 
-        if (username.isBlank() || password.isBlank()) {
+        if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Username and password cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // check if server already exists
         if (serverDAO.select(username, db) != null) {
             JOptionPane.showMessageDialog(this, "Username already exists.", "Account Creation Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // insert into DB
-        Server newServer = new Server();
-        newServer.setUsername(username);
-        newServer.setPassword(password);
-        serverDAO.insert(newServer, db);
+        Server newServer = new Server(0, username, password);
+        serverDAO.insert(newServer, db); // pass to the db object
 
         JOptionPane.showMessageDialog(this, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        dispose(); // close the register window
+        dispose();
+        new LoginFrame();
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(RegisterFrame::new);
