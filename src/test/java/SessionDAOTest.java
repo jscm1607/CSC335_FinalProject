@@ -197,4 +197,40 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         }
     }
 
+
+    @Test
+    void testSessionSelectAllOpen() {
+        // Insert 10 random sessions
+        List<Server> servers = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Server server = sdaot.randomServer();
+            servers.add(server);
+        }
+        servers = serverDao.selectAll();
+        List<Session> openSessions = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Session session = randomSession(servers.get(i));
+            if (session.isOpen()) {
+                openSessions.add(session);
+            }
+        }
+
+        // Get all from db
+        List<Session> results = dao.selectAllOpen();
+        assertEquals(openSessions.size(), results.size());
+
+        // Sort both lists by ID for comparison
+        openSessions.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
+        results.sort((s1, s2) -> Integer.compare(s1.getId(), s2.getId()));
+
+        // Compare each session
+        for (int i = 0; i < openSessions.size(); i++) {
+            Session expected = openSessions.get(i);
+            Session actual = results.get(i);
+            assertEquals(expected.getId(), actual.getId());
+            assertEquals(expected.getServer(), actual.getServer());
+            assertEquals(expected.isOpen(), actual.isOpen());
+            assertTrue(Math.abs(expected.getDate().getTime() - actual.getDate().getTime()) < 1000);
+        }
+    }
 }
