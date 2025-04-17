@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +12,7 @@ import org.junit.platform.commons.annotation.Testable;
 
 import dao.FoodDAO;
 import model.Food;
+import model.OrderFood;
 
 @Testable
 public class FoodDAOTest extends DAOTest<FoodDAO> {
@@ -102,5 +104,46 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         assertEquals(fd.toString(), dao.select(fd.getId()).toString());
         dao.delete(fd.getId());
         assertTrue(dao.selectAll().isEmpty(), "Should be empty.");
+    }
+
+    @Test
+    void testFoodGetNumOrdersById() {
+        Food food1 = randomFood();
+        Food food2 = randomFood();
+        int food1Count = (int)Math.random() * 10;
+        int food2Count = (int)Math.random() * 10;
+        // insert 0-10 random OrderFood with food1
+        for (int i = 0; i < food1Count; i++) {
+            OrderFoodDAOTest.randomOrderFood(food1, OrderDAOTest.randomValidOrder());
+        }
+        // insert 0-10 random OrderFood with food2
+        for (int i = 0; i < food2Count; i++) {
+            OrderFoodDAOTest.randomOrderFood(food2, OrderDAOTest.randomValidOrder());
+        }
+        assertEquals(food1Count, dao.getNumFoodOrdersByFoodId(food1.getId()));
+        assertEquals(food2Count, dao.getNumFoodOrdersByFoodId(food2.getId()));
+    }
+
+    @Test
+    void testFoodGetTotalProfitByFoodName() {
+        Food food1 = randomFood();
+        Food food2 = randomFood();
+        double food1Profit = 0;
+        double food2Profit = 0;
+        int food1Count = (int)Math.random() * 10;
+        int food2Count = (int)Math.random() * 10;
+        // insert 0-10 random OrderFood with food1
+        for (int i = 0; i < food1Count; i++) {
+            OrderFood of = OrderFoodDAOTest.randomOrderFood(food1, OrderDAOTest.randomValidOrder());
+            food1Profit += food1.getCost() * of.getQuantity();
+        }
+        // insert 0-10 random OrderFood with food2
+        for (int i = 0; i < food2Count; i++) {
+            OrderFood of = OrderFoodDAOTest.randomOrderFood(food2, OrderDAOTest.randomValidOrder());
+            food2Profit += food2.getCost() * of.getQuantity();
+        }
+        Map<String, Double> profits = dao.getTotalProfitByFoodName();
+        assertEquals(food1Profit, profits.get(food1.getName()));
+        assertEquals(food2Profit, profits.get(food2.getName()));
     }
 }

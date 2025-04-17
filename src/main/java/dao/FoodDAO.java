@@ -1,7 +1,9 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.Food;
 
@@ -73,4 +75,23 @@ public class FoodDAO extends DAO<Food, Integer> {
         db.executeUpdate("DELETE FROM food WHERE id = ?", ps -> ps.setInt(1, id));
     }
 
+    public Integer getNumFoodOrdersByFoodId(int id) {
+        return db.executeQuery("SELECT SUM(quantity) AS total FROM OrderFood WHERE foodId = ?", 
+        ps -> ps.setInt(1, id), 
+        rs -> {
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+            return 0;
+        });
+    }
+
+    public Map<String, Double> getTotalProfitByFoodName() {
+        List<Food> allFoods = selectAll();
+        Map<String, Double> foodProfits = new HashMap<>();
+        for (Food f : allFoods) {
+            foodProfits.put(f.getName(), getNumFoodOrdersByFoodId(f.getId()) * f.getCost());
+        }
+        return foodProfits;
+    }
 }

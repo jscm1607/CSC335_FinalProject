@@ -27,7 +27,7 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
         this.foodDaoTest = new FoodDAOTest();
     }
 
-    private OrderFood randomOrderFood(Food food, Order order) {
+    public static OrderFood randomOrderFood(Food food, Order order) {
         return new OrderFood((int) (Math.random() * 10), (int) (Math.random() * 10),
                 food.getId(),order.getId(),
                 new String[] { "Extra cheese", "No onions" });
