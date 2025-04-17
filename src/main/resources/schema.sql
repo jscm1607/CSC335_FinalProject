@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS Session (
     id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
     date TIMESTAMP,
     serverId INT,
-    totalTips DOUBLE,
     open BOOLEAN,
     FOREIGN KEY (serverId) REFERENCES Server(id)
 );
