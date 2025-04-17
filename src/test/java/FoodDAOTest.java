@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +12,7 @@ import org.junit.platform.commons.annotation.Testable;
 
 import dao.FoodDAO;
 import model.Food;
+import model.OrderFood;
 
 @Testable
 public class FoodDAOTest extends DAOTest<FoodDAO> {
@@ -18,13 +20,12 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         this.dao = new FoodDAO(db);
     }
 
-    public Food randomFood() {
+    public static Food randomFood() {
         return new Food(
             "Food" + System.currentTimeMillis(),
             Food.Category.values()[(int) (Math.random() * Food.Category.values().length)],
             Math.random() * 100,
-            Math.random() < 0.5,
-            (int) (Math.random() * 100)
+            Math.random() < 0.5
         );
     }
 
@@ -47,10 +48,9 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     }
 
     public static void main(String[] args) {
-        FoodDAOTest test = new FoodDAOTest();
         FoodDAO dao = new FoodDAO();
 
-        Food fd = test.randomFood();
+        Food fd = randomFood();
         assertTrue(fd.getId() > -2, "Should be valid Food SQL insert");
         Food res = dao.select(fd.getId());
         assertEquals(fd.toString(), res.toString());
@@ -83,7 +83,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     @Test
     void testFoodUpdate() {
         Food fd = randomFood();
-        Food fd_up = fd.setNumOrders(7);
+        Food fd_up = fd.setCost(fd.getCost() + 1);
         // check if updated
         Food res1 = dao.select(fd.getId());
         assertEquals(fd_up.toString(), res1.toString());
@@ -103,5 +103,46 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         assertEquals(fd.toString(), dao.select(fd.getId()).toString());
         dao.delete(fd.getId());
         assertTrue(dao.selectAll().isEmpty(), "Should be empty.");
+    }
+
+    @Test
+    void testFoodGetNumOrdersById() {
+        Food food1 = randomFood();
+        Food food2 = randomFood();
+        int food1Count = (int)Math.random() * 10;
+        int food2Count = (int)Math.random() * 10;
+        // insert 0-10 random OrderFood with food1
+        for (int i = 0; i < food1Count; i++) {
+            OrderFoodDAOTest.randomOrderFood(food1, OrderDAOTest.randomValidOrder());
+        }
+        // insert 0-10 random OrderFood with food2
+        for (int i = 0; i < food2Count; i++) {
+            OrderFoodDAOTest.randomOrderFood(food2, OrderDAOTest.randomValidOrder());
+        }
+        assertEquals(food1Count, dao.getNumFoodOrdersByFoodId(food1.getId()));
+        assertEquals(food2Count, dao.getNumFoodOrdersByFoodId(food2.getId()));
+    }
+
+    @Test
+    void testFoodGetTotalProfitByFoodName() {
+        Food food1 = randomFood();
+        Food food2 = randomFood();
+        double food1Profit = 0;
+        double food2Profit = 0;
+        int food1Count = (int)Math.random() * 10;
+        int food2Count = (int)Math.random() * 10;
+        // insert 0-10 random OrderFood with food1
+        for (int i = 0; i < food1Count; i++) {
+            OrderFood of = OrderFoodDAOTest.randomOrderFood(food1, OrderDAOTest.randomValidOrder());
+            food1Profit += food1.getCost() * of.getQuantity();
+        }
+        // insert 0-10 random OrderFood with food2
+        for (int i = 0; i < food2Count; i++) {
+            OrderFood of = OrderFoodDAOTest.randomOrderFood(food2, OrderDAOTest.randomValidOrder());
+            food2Profit += food2.getCost() * of.getQuantity();
+        }
+        Map<String, Double> profits = dao.getTotalProfitByFoodName();
+        assertEquals(food1Profit, profits.get(food1.getName()));
+        assertEquals(food2Profit, profits.get(food2.getName()));
     }
 }

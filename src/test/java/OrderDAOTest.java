@@ -17,25 +17,21 @@ import model.Session;
 
 @Testable
 public class OrderDAOTest extends DAOTest<OrderDAO> {
-    private final SessionDAOTest sndaot;
-    private final ServerDAOTest svdaot;
 
     public OrderDAOTest() {
         this.dao = new OrderDAO(db);
-        sndaot = new SessionDAOTest();
-        svdaot = new ServerDAOTest();
     }
 
-    Order randomOrder(Session session) {
+    public static Order randomOrder(Session session) {
         return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId());
     }
 
-    Order randomValidOrder() {
+    static Order randomValidOrder() {
         // Create & insert random server
-        Server sv = svdaot.randomServer();
+        Server sv = ServerDAOTest.randomServer();
         assertTrue(sv.getId() >= 0, "Should be valid Server SQL insert");
         // Create & insert random session
-        Session sn = sndaot.randomSession(sv);
+        Session sn = SessionDAOTest.randomSession(sv);
         sn.setServer(sv.getId());
         assertTrue(sn.getId() >= 0, "Should be valid Session SQL insert");
         // Create order with valid database foreign keys (sessionId)
@@ -87,9 +83,9 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     @Test
     void testOrderSelectAll() {
         // Establish a valid session (shared to all orders)
-        Server sv = svdaot.randomServer();
+        Server sv = ServerDAOTest.randomServer();
         assertTrue(sv.getId() >= 0);
-        Session sn = sndaot.randomSession(sv);
+        Session sn = SessionDAOTest.randomSession(sv);
         assertTrue(sn.getId() >= 0);
 
         // Do order insertions
@@ -139,5 +135,4 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         Order res = dao.select(99999);
         assertNull(res);
     }
-
 }

@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS Server (
      name VARCHAR(255) NOT NULL,
      category VARCHAR(50),
      cost DOUBLE,
-     inStock BOOLEAN,
-     numOrders INT
+     inStock BOOLEAN
  );
  
 -- Create Session table
@@ -20,7 +19,6 @@ CREATE TABLE IF NOT EXISTS Session (
     id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
     date TIMESTAMP,
     serverId INT,
-    totalTips DOUBLE,
     open BOOLEAN,
     FOREIGN KEY (serverId) REFERENCES Server(id)
 );
