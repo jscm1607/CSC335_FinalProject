@@ -21,15 +21,14 @@ import model.Session;
 @Testable
 public class SessionDAOTest extends DAOTest<SessionDAO> {
     private final ServerDAO serverDao;
-    private final ServerDAOTest sdaot = new ServerDAOTest();
 
     public SessionDAOTest() {
-        this.dao = new SessionDAO();
+        this.dao = new SessionDAO(db);
         this.serverDao = new ServerDAO(db);
     }
 
-    Session randomSession(Server server) {
-        return new Session(new Date(),server.getId(), Math.random() < 0.5);
+    public static Session randomSession(Server server) {
+        return new Session(new Date(), server.getId(), Math.random() < 0.5);
     }
 
     @BeforeAll
@@ -52,10 +51,9 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         });
     }
 
-    
     @Test
-    void testZSessionTipAggregation(){
-        Session session = randomSession(sdaot.randomServer());
+    void testZSessionTipAggregation() {
+        Session session = randomSession(ServerDAOTest.randomServer());
         assertTrue(session.getId() > -2);
 
         double aggregatedTips = 0;
@@ -70,8 +68,34 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
     }
 
     @Test
+    void testSessionGetOrders() {
+        Session session = randomSession(ServerDAOTest.randomServer());
+        assertTrue(session.getId() > -2);
+        Session seperateSession = randomSession(ServerDAOTest.randomServer());
+        assertTrue(seperateSession.getId() > -2);
+
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Order temp_order = OrderDAOTest.randomOrder(session);
+            orders.add(temp_order);
+            assertTrue(temp_order.getId() > -2);
+        }
+        List<Order> seperateOrders = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Order temp_order = OrderDAOTest.randomOrder(seperateSession);
+            seperateOrders.add(temp_order);
+            assertTrue(temp_order.getId() > -2);
+        }
+
+        List<Order> resultOrders = dao.getOrders(session.getId());
+        assertEquals(orders.size(), resultOrders.size());
+        List<Order> resultSeperateOrders = dao.getOrders(session.getId());
+        assertEquals(seperateOrders.size(), resultSeperateOrders.size());
+    }
+
+    @Test
     void testSessionInsertAndSelect() {
-        Server server = sdaot.randomServer();
+        Server server = ServerDAOTest.randomServer();
         Session session = randomSession(server);
         assertTrue(session.getId() > -2);
         Session result = dao.select(session.getId());
@@ -89,11 +113,10 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         assertEquals(0, results.size());
     }
 
-  
     @Test
     void testSessionUpdate() {
         // Insert original session
-        Session original = randomSession(sdaot.randomServer());
+        Session original = randomSession(ServerDAOTest.randomServer());
 
         assertTrue(original.getId() > -2);
 
@@ -125,7 +148,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         assertTrue(dao.selectAll().isEmpty());
 
         // Insert and verify
-        Session session = randomSession(sdaot.randomServer());
+        Session session = randomSession(ServerDAOTest.randomServer());
         assertFalse(dao.selectAll().isEmpty());
         assertEquals(1, dao.selectAll().size());
 
@@ -145,7 +168,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         // Insert 10 random sessions
         List<Server> servers = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Server server = sdaot.randomServer();
+            Server server = ServerDAOTest.randomServer();
             servers.add(server);
         }
         servers = serverDao.selectAll();

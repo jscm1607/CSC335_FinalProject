@@ -26,7 +26,7 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         svdaot = new ServerDAOTest();
     }
 
-    Order randomOrder(Session session) {
+    public static Order randomOrder(Session session) {
         return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId());
     }
 

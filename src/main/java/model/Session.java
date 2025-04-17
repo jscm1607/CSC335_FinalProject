@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 
 import dao.SessionDAO;
 
@@ -69,6 +70,10 @@ public class Session {
 
 	public int getId() {
 		return id;
+	}
+
+	public List<Order> getOrders() {
+		return dao.getOrders(id);
 	}
 
 	@Override

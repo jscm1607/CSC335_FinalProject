@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Order;
 import model.Session;
 
 public class SessionDAO extends DAO<Session, Integer> {
@@ -81,6 +82,25 @@ public class SessionDAO extends DAO<Session, Integer> {
                 total += rs.getDouble("totalTips");
             }
             return total;
+        });
+    }
+
+    public List<Order> getOrders(Integer sessionId){
+        return db.executeQuery(
+            "SELECT * FROM Orders where sessionId = ?"
+        ,statement ->statement.setInt(1, sessionId),
+        rs -> {
+            List<Order> orders = new ArrayList<>();
+            while (rs.next()) {
+                orders.add(new Order(
+                    rs.getInt("id"),
+                    rs.getBoolean("closed"),
+                    rs.getInt("tableNumber"),
+                    rs.getDouble("tip"),
+                    rs.getInt("sessionId")
+                ));
+            }
+            return orders;
         });
     }
 }

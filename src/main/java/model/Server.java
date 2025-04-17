@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import dao.ServerDAO;
 
 public final class Server {
@@ -38,6 +40,9 @@ public final class Server {
 		return id;
 	}
 
+	public List<Order> getOpenOrders() {
+		return dao.getOpenOrders(this.id);
+	}
 
 	public Server setUsername(String username) {
 		Server out = new Server(id, username, password);
