@@ -12,6 +12,10 @@ public class Order {
 	private final double tip;
 	private final int sessionId;
 	
+	private double totalCost;
+	
+	private java.util.Date createdAt = new java.util.Date();  // default to now, will require better implementation?
+	
 	// CONSTRUCTOR
 	public Order(int id, boolean closed, int tableNumber, double tip, int sessionId) {
 		super();
@@ -74,6 +78,20 @@ public class Order {
 		Order out = new Order(id, closed, tableNumber, tip, sessionId);
 		dao.update(out);
 		return out;
+	}
+	
+	//get total cost
+	public double getTotalCost() {
+	    return totalCost;
+	}
+	
+	
+	public java.util.Date getCreatedAt() {
+	    return createdAt;
+	}
+
+	public void setCreatedAt(java.util.Date createdAt) {
+	    this.createdAt = createdAt;
 	}
 	
 	@Override
