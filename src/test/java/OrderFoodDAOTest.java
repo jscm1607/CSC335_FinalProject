@@ -18,13 +18,9 @@ import model.OrderFood;
 
 @Testable
 public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
-    private final OrderDAOTest orderDaoTest;
-    private final FoodDAOTest foodDaoTest;
 
     public OrderFoodDAOTest() {
         this.dao = new OrderFoodDAO(db);
-        this.orderDaoTest = new OrderDAOTest();
-        this.foodDaoTest = new FoodDAOTest();
     }
 
     public static OrderFood randomOrderFood(Food food, Order order) {
@@ -34,9 +30,9 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
     }
 
     private OrderFood randomValidOrderFood() {
-        Food food = foodDaoTest.randomFood();
+        Food food = FoodDAOTest.randomFood();
         assertTrue(food.getId() >= 0, "Should be valid Food SQL insert");
-        Order order = orderDaoTest.randomValidOrder();
+        Order order = OrderDAOTest.randomValidOrder();
         assertTrue(order.getId() >= 0, "Should be valid Order SQL insert");
 
         // Create OrderFood with valid foreign keys
@@ -74,7 +70,7 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
 
     @Test
     void testOrderFoodInsertBadForeignKey() {
-        OrderFood of = randomOrderFood(foodDaoTest.randomFood(), orderDaoTest.randomValidOrder());
+        OrderFood of = randomOrderFood(FoodDAOTest.randomFood(), OrderDAOTest.randomValidOrder());
         of = of.setFoodId(99999); // Invalid foodId
         of = of.setOrderId(99999); // Invalid orderId
         assertFalse(of.getId() > 0, "SQL insert should fail with invalid foreign keys");

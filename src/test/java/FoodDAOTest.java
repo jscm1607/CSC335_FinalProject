@@ -20,7 +20,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         this.dao = new FoodDAO(db);
     }
 
-    public Food randomFood() {
+    public static Food randomFood() {
         return new Food(
             "Food" + System.currentTimeMillis(),
             Food.Category.values()[(int) (Math.random() * Food.Category.values().length)],
@@ -48,10 +48,9 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     }
 
     public static void main(String[] args) {
-        FoodDAOTest test = new FoodDAOTest();
         FoodDAO dao = new FoodDAO();
 
-        Food fd = test.randomFood();
+        Food fd = randomFood();
         assertTrue(fd.getId() > -2, "Should be valid Food SQL insert");
         Food res = dao.select(fd.getId());
         assertEquals(fd.toString(), res.toString());

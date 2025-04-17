@@ -17,13 +17,9 @@ import model.Session;
 
 @Testable
 public class OrderDAOTest extends DAOTest<OrderDAO> {
-    private final SessionDAOTest sndaot;
-    private final ServerDAOTest svdaot;
 
     public OrderDAOTest() {
         this.dao = new OrderDAO(db);
-        sndaot = new SessionDAOTest();
-        svdaot = new ServerDAOTest();
     }
 
     public static Order randomOrder(Session session) {
@@ -87,9 +83,9 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     @Test
     void testOrderSelectAll() {
         // Establish a valid session (shared to all orders)
-        Server sv = svdaot.randomServer();
+        Server sv = ServerDAOTest.randomServer();
         assertTrue(sv.getId() >= 0);
-        Session sn = sndaot.randomSession(sv);
+        Session sn = SessionDAOTest.randomSession(sv);
         assertTrue(sn.getId() >= 0);
 
         // Do order insertions
