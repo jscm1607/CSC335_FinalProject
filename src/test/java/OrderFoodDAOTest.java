@@ -11,8 +11,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.FoodDAO;
-import dao.OrderDAO;
 import dao.OrderFoodDAO;
 import model.Food;
 import model.Order;
@@ -20,15 +18,11 @@ import model.OrderFood;
 
 @Testable
 public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
-    private final OrderDAO orderDao;
-    private final FoodDAO foodDao;
     private final OrderDAOTest orderDaoTest;
     private final FoodDAOTest foodDaoTest;
 
     public OrderFoodDAOTest() {
         this.dao = new OrderFoodDAO(db);
-        this.orderDao = new OrderDAO(db);
-        this.foodDao = new FoodDAO(db);
         this.orderDaoTest = new OrderDAOTest();
         this.foodDaoTest = new FoodDAOTest();
     }

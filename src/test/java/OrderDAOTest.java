@@ -11,22 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
 import dao.OrderDAO;
-import dao.ServerDAO;
-import dao.SessionDAO;
 import model.Order;
 import model.Server;
 import model.Session;
 
 @Testable
 public class OrderDAOTest extends DAOTest<OrderDAO> {
-    private final SessionDAO sessionDao;
     private final SessionDAOTest sndaot;
-    private final ServerDAO serverDao;
     private final ServerDAOTest svdaot;
 
     public OrderDAOTest() {
-        sessionDao = new SessionDAO(db);
-        serverDao = new ServerDAO(db);
         this.dao = new OrderDAO(db);
         sndaot = new SessionDAOTest();
         svdaot = new ServerDAOTest();
