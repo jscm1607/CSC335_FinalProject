@@ -203,7 +203,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         // Insert 10 random sessions
         List<Server> servers = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Server server = sdaot.randomServer();
+            Server server = ServerDAOTest.randomServer();
             servers.add(server);
         }
         servers = serverDao.selectAll();
