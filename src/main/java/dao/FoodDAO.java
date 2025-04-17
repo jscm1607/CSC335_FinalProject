@@ -14,26 +14,24 @@ public class FoodDAO extends DAO<Food, Integer> {
 
     @Override
     public int insert(Food entity) {
-        return db.executeInsert("INSERT INTO food (name, category, cost, inStock, numOrders) VALUES (?, ?, ?, ?, ?)",
+        return db.executeInsert("INSERT INTO food (name, category, cost, inStock) VALUES (?, ?, ?, ?)",
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setString(2, entity.getCategory().toString());
                     ps.setDouble(3, entity.getCost());
                     ps.setBoolean(4, entity.isInStock());
-                    ps.setInt(5, entity.getNumOrders());
                 });
     }
 
     @Override
     public void update(Food entity) {
-        db.executeUpdate("UPDATE food SET name = ?, category = ?, cost = ?, inStock = ?, numOrders = ? WHERE id = ?",
+        db.executeUpdate("UPDATE food SET name = ?, category = ?, cost = ?, inStock = ? WHERE id = ?",
                 ps -> {
                     ps.setString(1, entity.getName());
                     ps.setString(2, entity.getCategory().toString());
                     ps.setDouble(3, entity.getCost());
                     ps.setBoolean(4, entity.isInStock());
-                    ps.setInt(5, entity.getNumOrders());
-                    ps.setInt(6, entity.getId());
+                    ps.setInt(5, entity.getId());
                 });
     }
 
@@ -46,8 +44,7 @@ public class FoodDAO extends DAO<Food, Integer> {
                     rs.getString("name"),
                     Food.Category.valueOf(rs.getString("category")),
                     rs.getDouble("cost"),
-                    rs.getBoolean("inStock"),
-                    rs.getInt("numOrders")
+                    rs.getBoolean("inStock")
                 );
             }
             return null;
@@ -64,8 +61,7 @@ public class FoodDAO extends DAO<Food, Integer> {
                     rs.getString("name"),
                     Food.Category.valueOf(rs.getString("category")),
                     rs.getDouble("cost"),
-                    rs.getBoolean("inStock"),
-                    rs.getInt("numOrders")
+                    rs.getBoolean("inStock")
                 ));
             }
             return foods;

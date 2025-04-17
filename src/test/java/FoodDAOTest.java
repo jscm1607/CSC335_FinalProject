@@ -23,8 +23,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
             "Food" + System.currentTimeMillis(),
             Food.Category.values()[(int) (Math.random() * Food.Category.values().length)],
             Math.random() * 100,
-            Math.random() < 0.5,
-            (int) (Math.random() * 100)
+            Math.random() < 0.5
         );
     }
 
@@ -83,7 +82,7 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
     @Test
     void testFoodUpdate() {
         Food fd = randomFood();
-        Food fd_up = fd.setNumOrders(7);
+        Food fd_up = fd.setCost(fd.getCost() + 1);
         // check if updated
         Food res1 = dao.select(fd.getId());
         assertEquals(fd_up.toString(), res1.toString());

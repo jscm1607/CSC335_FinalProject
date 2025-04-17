@@ -113,13 +113,13 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
 
     @Test
     void testServerDelete() {
-        assertTrue(dao.selectAll().isEmpty());
+        int before = dao.selectAll().size();
         Server s = randomServer();
         List<Server> res = dao.selectAll();
-        assertEquals(1, res.size());
+        assertEquals(before + 1, res.size());
         assertEquals(s.getPassword(), dao.select(s.getUsername()).getPassword());
         dao.delete(s.getUsername());
-        assertTrue(dao.selectAll().isEmpty(), "Should be empty.");
+        assertEquals(before, dao.selectAll().size());
     }
 
 
