@@ -38,13 +38,13 @@ public class SessionDAO extends DAO<Session, Integer> {
     public Session select(Integer id) {
         return db.executeQuery("SELECT * FROM Session WHERE id = ?",
                 statement -> statement.setInt(1, id),
-                resultSet -> resultSet.next() 
-                    ? new Session(
-                        resultSet.getInt("id"),
-                        resultSet.getTimestamp("date"),
-                        resultSet.getInt("serverId"),
-                        resultSet.getBoolean("open"))
-                    : null);
+                resultSet -> resultSet.next()
+                        ? new Session(
+                                resultSet.getInt("id"),
+                                resultSet.getTimestamp("date"),
+                                resultSet.getInt("serverId"),
+                                resultSet.getBoolean("open"))
+                        : null);
     }
 
     @Override
@@ -55,9 +55,9 @@ public class SessionDAO extends DAO<Session, Integer> {
                     List<Session> sessions = new ArrayList<>();
                     while (rs.next()) {
                         sessions.add(new Session(
-                            rs.getInt("id"),
-                            rs.getTimestamp("date"),
-                            rs.getInt("serverId"),
+                                rs.getInt("id"),
+                                rs.getTimestamp("date"),
+                                rs.getInt("serverId"),
                             rs.getBoolean("open")
                         ));
                     }
@@ -75,12 +75,28 @@ public class SessionDAO extends DAO<Session, Integer> {
         return db.executeQuery(
             "SELECT SUM(tip) AS totalTips FROM Orders where sessionId = ?"
         ,statement ->statement.setInt(1, id),
-        rs -> {
-            double total = 0;
-            while (rs.next()) {
-                total += rs.getDouble("totalTips");
-            }
-            return total;
-        });
+                rs -> {
+                    double total = 0;
+                    while (rs.next()) {
+                        total += rs.getDouble("totalTips");
+                    }
+                    return total;
+                });
+    }
+
+    public List<Session> selectAllOpen() {
+        return db.executeQuery("SELECT * FROM Session WHERE open = true",
+                statement -> {},
+                rs -> {
+                    List<Session> sessions = new ArrayList<>();
+                    while (rs.next()) {
+                        sessions.add(new Session(
+                                rs.getInt("id"),
+                                rs.getTimestamp("date"),
+                                rs.getInt("serverId"),
+                                rs.getBoolean("open")));
+                    }
+                    return sessions;
+                });
     }
 }
