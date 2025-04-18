@@ -474,9 +474,20 @@ class EditItemPanel extends JPanel {
         }
 
         this.currentSession = controller.getSessionById(sessionId);
+        
+        
+
+        
+        
+        
+        
+        
+        ////old set tip method
 
         // Set existing tip
-        double currentTip = currentSession.getTotalTips();
+        double currentTip = order != null ? order.getTip() : 0.0;
+
+       // double currentTip = currentSession.getTotalTips(); old way
         tipField.setText(String.format("%.2f", currentTip));
 
         refreshFoodButtons();
@@ -711,53 +722,81 @@ class OrderHistoryPanel extends JPanel {
  * Displays the most frequently ordered food items across all sessions.
  * Pulls live order data from the Controller and sorts by quantity.
  */
-class TopItemsPanel extends JPanel {
+
+    class TopItemsPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JList<String> topItemsList;
+
     private Controller controller;
 
     public TopItemsPanel() {
         this.controller = new Controller();
-
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel title
         JLabel titleLabel = new JLabel("Top Selling Items", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, BorderLayout.NORTH);
 
-        // List display for top items
-        topItemsList = new JList<>();
-        JScrollPane scrollPane = new JScrollPane(topItemsList);
-        add(scrollPane, BorderLayout.CENTER);
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("By Orders", createOrdersListPanel());
+        tabs.addTab("By Revenue", createRevenueListPanel());
 
-        // Load top items from DB
-        refreshTopItems();
+        add(tabs, BorderLayout.CENTER);
     }
 
-    /**
-     * Fetches and displays the ranked top-selling food items.
-     */
-    private void refreshTopItems() {
-        Map<Food, Integer> topItems = controller.getTopOrderedItems();
+    private JPanel createOrdersListPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JList<String> orderList = new JList<>();
+        JScrollPane scrollPane = new JScrollPane(orderList);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Sort entries in descending order of quantity
-        List<Map.Entry<Food, Integer>> sorted = new ArrayList<>(topItems.entrySet());
+        // Get data from controller
+        Map<Food, Integer> topOrderedItems = controller.getTopOrderedItems();
+
+        // Sort by quantity
+        List<Map.Entry<Food, Integer>> sorted = new ArrayList<>(topOrderedItems.entrySet());
         sorted.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
 
-        // Load into JList model
         DefaultListModel<String> model = new DefaultListModel<>();
         int rank = 1;
         for (Map.Entry<Food, Integer> entry : sorted) {
-            String line = rank + ". " + entry.getKey().getName() + " - " + entry.getValue() + " orders";
+            String line = rank + ". " + entry.getKey().getName() + " – " + entry.getValue() + " orders";
             model.addElement(line);
             rank++;
         }
 
-        topItemsList.setModel(model);
+        orderList.setModel(model);
+        return panel;
+    }
+
+    private JPanel createRevenueListPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JList<String> revenueList = new JList<>();
+        JScrollPane scrollPane = new JScrollPane(revenueList);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Get data from controller
+        Map<String, Double> profitMap = controller.getFoodDAO().getTotalProfitByFoodName();
+
+        // Sort by revenue descending
+        List<Map.Entry<String, Double>> sorted = new ArrayList<>(profitMap.entrySet());
+        sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        DefaultListModel<String> model = new DefaultListModel<>();
+        int rank = 1;
+        for (Map.Entry<String, Double> entry : sorted) {
+            String line = rank + ". " + entry.getKey() + " – $" + String.format("%.2f", entry.getValue());
+            model.addElement(line);
+            rank++;
+        }
+
+        revenueList.setModel(model);
+        return panel;
     }
 }
+
+
+
 
 
 class TableOverviewPanel extends JPanel {

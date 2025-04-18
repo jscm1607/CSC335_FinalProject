@@ -29,8 +29,8 @@ public class Controller {
 
     // Session
     public int createSession(Server server) {
-        Session session = new Session(new Date(), server.getId(), 0.0, true);
-        return sessionDAO.insert(session);
+        Session session = new Session(new Date(), server.getId(), true);
+        return session.getId();
     }
 
     public Session getSessionById(int sessionId) {
@@ -40,14 +40,14 @@ public class Controller {
     public List<Session> getSessionsForServer(int serverId) {
         List<Session> allSessions = sessionDAO.selectAll();
         return allSessions.stream()
-            .filter(s -> s.getServer() == serverId)
-            .toList();
+                .filter(s -> s.getServer() == serverId)
+                .collect(Collectors.toList());
     }
 
     // Order
     public int createOrder(int tableNumber, int sessionId) {
-        Order order = new Order(0, false, tableNumber, 0.0, sessionId);
-        return orderDAO.insert(order);
+        Order order = new Order(false, tableNumber, 0.0, sessionId);
+        return order.getId();
     }
 
     public Order getOrder(int orderId) {
@@ -57,29 +57,31 @@ public class Controller {
     public Order getOrderBySessionId(int sessionId) {
         List<Order> orders = orderDAO.selectAll();
         return orders.stream()
-            .filter(o -> o.getSessionId() == sessionId && !o.isClosed())
-            .findFirst()
-            .orElse(null);
+                .filter(o -> o.getSessionId() == sessionId && !o.isClosed())
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Order> getOrdersForServer(int serverId) {
         List<Session> sessions = getSessionsForServer(serverId);
-        Set<Integer> sessionIds = sessions.stream().map(Session::getId).collect(Collectors.toSet());
+        Set<Integer> sessionIds = sessions.stream()
+                .map(Session::getId)
+                .collect(Collectors.toSet());
         return orderDAO.selectAll().stream()
                 .filter(order -> sessionIds.contains(order.getSessionId()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<Order> getOrdersForSession(int sessionId) {
         return orderDAO.selectAll().stream()
                 .filter(order -> order.getSessionId() == sessionId)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // OrderFood
     public void addFoodToOrder(int orderId, int foodId, int seat, int quantity, String[] modifications) {
-        OrderFood orderFood = new OrderFood(0, seat, quantity, foodId, orderId, modifications);
-        orderFoodDAO.insert(orderFood);
+        OrderFood orderFood = new OrderFood(seat, quantity, foodId, orderId, modifications);
+        // Persisted via constructor
     }
 
     public void addFoodToOrder(Session session, int seat, Food food, String[] modifications) {
@@ -92,7 +94,7 @@ public class Controller {
     public List<OrderFood> getOrderItems(int orderId) {
         return orderFoodDAO.selectAll().stream()
                 .filter(item -> item.getOrderId() == orderId)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // Food
@@ -103,7 +105,7 @@ public class Controller {
     public List<Food> getFoodByCategory(String category) {
         return foodDAO.selectAll().stream()
                 .filter(food -> food.getCategory().toString().equalsIgnoreCase(category))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public Food getFoodById(int foodId) {
@@ -111,7 +113,7 @@ public class Controller {
     }
 
     public void addFood(String name, double cost, Food.Category category, boolean inStock) {
-        new Food(name, category, cost, inStock, 0);
+        new Food(name, category, cost, inStock);  // persisted by constructor
     }
 
     public void seedFoodItemsIfEmpty() {
@@ -127,31 +129,34 @@ public class Controller {
         if (!hasBeverages) addFood("Coke", 2.00, Food.Category.BEVERAGES, true);
     }
 
-    // Tip logic
+    // Tip logic (using SessionDAO's getTotalTips)
     public double getTipsForSession(int sessionId) {
-        Session session = sessionDAO.select(sessionId);
-        return session != null ? session.getTotalTips() : 0.0;
+        return sessionDAO.getTotalTips(sessionId);
     }
 
     public double getTotalTipsForServer(int serverId) {
         return getSessionsForServer(serverId).stream()
-                .mapToDouble(Session::getTotalTips)
+                .mapToDouble(s -> sessionDAO.getTotalTips(s.getId()))
                 .sum();
     }
-
+    
+    
+    ////current tip method
+    
     public void setTipForCurrentSession(int sessionId, double tip) {
-        Session session = sessionDAO.select(sessionId);
-        if (session != null) {
-            session.setTotalTips(tip);
-            sessionDAO.update(session);
+        Order order = getOrderBySessionId(sessionId);
+        if (order != null) {
+            order.setTip(tip); // Persists via DAO
         }
     }
+
+    
+
 
     // Top items
     public Map<Food, Integer> getTopOrderedItems() {
         List<OrderFood> allOrderItems = orderFoodDAO.selectAll();
         Map<Integer, Integer> foodIdToCount = new HashMap<>();
-
         for (OrderFood item : allOrderItems) {
             int foodId = item.getFoodId();
             foodIdToCount.put(foodId, foodIdToCount.getOrDefault(foodId, 0) + item.getQuantity());
@@ -162,12 +167,26 @@ public class Controller {
             Food food = foodDAO.select(entry.getKey());
             topItems.put(food, entry.getValue());
         }
-
         return topItems;
     }
 
+    // Timestamp formatting
     public String getOrderCreatedAt(int orderId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(new Date());
+        return sdf.format(new Date()); // You can refine this if you're tracking order timestamps in DB
     }
+    
+    
+    
+    
+    public FoodDAO getFoodDAO() {
+        return this.foodDAO;
+    }
+
+    
+    
+    
 }
+
+
+
