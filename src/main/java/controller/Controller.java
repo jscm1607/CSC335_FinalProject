@@ -24,9 +24,15 @@ public class Controller {
 
     // Server
     public Server getServerByUsername(String username) {
+    	System.out.println("Fetching server with username: " + username);
         return serverDAO.select(username);
     }
-
+    
+	public Server getServerById(int id) {
+		System.out.println("Fetching server with ID: " + id);
+		return serverDAO.select("server" + id);
+	}
+    
     // Session
     public int createSession(Server server) {
         Session session = new Session(new Date(), server.getId(), true);
@@ -78,6 +84,27 @@ public class Controller {
                 .collect(Collectors.toList());
     }
 
+    /// 04/18
+	public boolean closeOrder(int orderId) {
+	    Order order = orderDAO.select(orderId);
+	    if (order != null && !order.isClosed()) {
+	        order.setClosed(true);
+	        System.out.println("Order " + orderId + " closed.");
+	        orderDAO.update(order);
+	        return true;
+	    }
+	    return false;
+	}
+	
+	public List<Order> getAllOrders() {
+	    return orderDAO.selectAll();
+	}
+	
+//	public int getSeatCountForOrder(int orderId) {
+//	    Order order = orderDAO.select(orderId);
+//	    return order != null ? orderDAO.getSeatCount(orderId) : 0;
+//	}
+    
     // OrderFood
     public void addFoodToOrder(int orderId, int foodId, int seat, int quantity, String[] modifications) {
         OrderFood orderFood = new OrderFood(seat, quantity, foodId, orderId, modifications);
