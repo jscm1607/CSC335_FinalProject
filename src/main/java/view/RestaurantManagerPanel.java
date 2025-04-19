@@ -51,24 +51,44 @@ public class RestaurantManagerPanel extends JPanel {
         cardLayout = new CardLayout();
         screens = new JPanel(cardLayout);
 
-        // Add views to card layout
-        screens.add(new MainPOSPanel(this, server), "MainPOS");
-        screens.add(new AssignTablePanel(this, server), "AssignTable");
-
+        // init frames
+        MainPOSPanel mainPOSPanel = new MainPOSPanel(this, server);
+        AssignTablePanel assignTablePanel = new AssignTablePanel(this, server);
         seatSelectPanel = new SeatSelectPanel(this);
+        editItemPanel = new EditItemPanel(this);
+        OrderHistoryPanel orderHistoryPanel = new OrderHistoryPanel(server);
+        TopItemsPanel topItemsPanel = new TopItemsPanel();
+        TableOverviewPanel tableOverviewPanel = new TableOverviewPanel(server);
+        TipsPanel tipsPanel = new TipsPanel(server);
+
+        // register frames as observers to DAOs
+        controller.registerDaoObserver(mainPOSPanel);
+        controller.registerDaoObserver(assignTablePanel);
+        controller.registerDaoObserver(seatSelectPanel);
+        controller.registerDaoObserver(editItemPanel);
+        controller.registerDaoObserver(orderHistoryPanel);
+        controller.registerDaoObserver(topItemsPanel);
+        controller.registerDaoObserver(tableOverviewPanel);
+        controller.registerDaoObserver(tipsPanel);
+
+        // Add views to card layout
+        screens.add(mainPOSPanel, "MainPOS");
+        screens.add(assignTablePanel, "AssignTable");
+
+        // seatSelectPanel = new SeatSelectPanel(this);
         screens.add(seatSelectPanel, "SeatSelect");
 
-        editItemPanel = new EditItemPanel(this);
+        // editItemPanel = new EditItemPanel(this);
         editItemPanel.setName("EditItem");
         screens.add(editItemPanel, "EditItem");
 
 
-        screens.add(new OrderHistoryPanel(server), "OrderHistory");
+        screens.add(orderHistoryPanel, "OrderHistory");
 
-        screens.add(new TopItemsPanel(), "TopItems");
-        screens.add(new TableOverviewPanel(server), "TableOverview");
+        screens.add(topItemsPanel, "TopItems");
+        screens.add(tableOverviewPanel, "TableOverview");
        // screens.add(new TipsPanel(), "Tips");
-        screens.add(new TipsPanel(server), "Tips");
+        screens.add(tipsPanel, "Tips");
 
 
         setLayout(new BorderLayout());
@@ -199,7 +219,7 @@ public class RestaurantManagerPanel extends JPanel {
 class MainPOSPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
     }
     /**
 	 * 
@@ -234,7 +254,7 @@ class MainPOSPanel extends JPanel implements Observer {
 class AssignTablePanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
     }
     private static final long serialVersionUID = 1L;
 
@@ -335,7 +355,7 @@ class AssignTablePanel extends JPanel implements Observer {
 class SeatSelectPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
     }
     private static final long serialVersionUID = 1L;
 
@@ -398,7 +418,7 @@ class SeatSelectPanel extends JPanel implements Observer {
 class EditItemPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
     }
     private static final long serialVersionUID = 1L;
 
@@ -667,7 +687,7 @@ class EditItemPanel extends JPanel implements Observer {
 class OrderHistoryPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        refreshOrderHistory();
     }
     private static final long serialVersionUID = 1L;
 
@@ -760,7 +780,8 @@ class OrderHistoryPanel extends JPanel implements Observer {
 class TopItemsPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        removeAll();
+        populate();
     }
     private static final long serialVersionUID = 1L;
 
@@ -770,7 +791,10 @@ class TopItemsPanel extends JPanel implements Observer {
         this.controller = new Controller();
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        populate();
+    }
 
+    private void populate() {
         JLabel titleLabel = new JLabel("Top Selling Items", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, BorderLayout.NORTH);
@@ -840,7 +864,7 @@ class TopItemsPanel extends JPanel implements Observer {
 class TableOverviewPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        refreshTableData();
     }
     /**
 	 * 
@@ -927,7 +951,7 @@ class TableOverviewPanel extends JPanel implements Observer {
 class TipsPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME implement Observer.update()
+        refreshTipsReport();
     }
     private static final long serialVersionUID = 1L;
     private JTextArea tipsReportArea;

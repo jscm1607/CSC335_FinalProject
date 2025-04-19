@@ -22,6 +22,15 @@ public class Controller {
         this.orderFoodDAO = new OrderFoodDAO();
     }
 
+    // DAO registration for observers
+    public void registerDaoObserver(Observer observer) {
+        serverDAO.addObserver(observer);
+        sessionDAO.addObserver(observer);
+        foodDAO.addObserver(observer);
+        orderDAO.addObserver(observer);
+        orderFoodDAO.addObserver(observer);
+    }
+
     // Server
     public Server getServerByUsername(String username) {
     	System.out.println("Fetching server with username: " + username);
