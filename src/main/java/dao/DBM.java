@@ -36,6 +36,7 @@ public class DBM {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        this.runH2Console();
     }
 
     /**
@@ -57,7 +58,7 @@ public class DBM {
     /**
      * H2 Console (Web UI) for database management.
      */
-    public void runH2Console() {
+    private void runH2Console() {
         try {
             Server.main("-web", "-webAllowOthers", "-webPort", "8082");
             System.out.println("H2 Console started at: http://localhost:8082");
