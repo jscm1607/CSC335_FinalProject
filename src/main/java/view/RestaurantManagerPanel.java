@@ -390,18 +390,18 @@ class EditItemPanel extends JPanel {
     private JComboBox<Food.Category> categoryComboBox;
     private JTextField tipField; // NEW
 
-    private static final Map<String, Double> BURGER_MODS = Map.of(
-        "No Lettuce", 0.0,
-        "Extra Patty", 1.50,
-        "Add Cheese", 0.75,
-        "No Pickles", 0.0,
-        "Extra Tomato", 0.50
-    );
+    private static final Map<String, Double> BURGER_MODS = new HashMap<String, Double>() {{
+        put("No Lettuce", 0.0);
+        put("Extra Patty", 1.50);
+        put("Add Cheese", 0.75);
+        put("No Pickles", 0.0);
+        put("Extra Tomato", 0.50);
+    }};
 
-    private static final Map<String, Double> FRIES_MODS = Map.of(
-        "Jumbo Size", 1.00,
-        "Animal Style", 1.50
-    );
+    private static final Map<String, Double> FRIES_MODS = new HashMap<String, Double>() {{
+        put("Jumbo Size", 1.00);
+        put("Animal Style", 1.50);
+    }};
 
     private static final String[] SHAKE_FLAVORS = { "Chocolate", "Vanilla", "Strawberry" };
 
@@ -558,7 +558,7 @@ class EditItemPanel extends JPanel {
                     modifiers = FRIES_MODS;
                     break;
                 default:
-                    modifiers = Map.of(); // No modifiers
+                    modifiers = new HashMap<>(); // No modifiers
             }
 
             panel.setLayout(new GridLayout(modifiers.size(), 1));
