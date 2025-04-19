@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -194,7 +196,11 @@ public class RestaurantManagerPanel extends JPanel {
     }
 }
 
-class MainPOSPanel extends JPanel {
+class MainPOSPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     /**
 	 * 
 	 */
@@ -225,7 +231,11 @@ class MainPOSPanel extends JPanel {
     }
 }
 
-class AssignTablePanel extends JPanel {
+class AssignTablePanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     private static final long serialVersionUID = 1L;
 
     private JTextField tableNumberField;
@@ -322,7 +332,11 @@ class AssignTablePanel extends JPanel {
 
 
 
-class SeatSelectPanel extends JPanel {
+class SeatSelectPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     private static final long serialVersionUID = 1L;
 
     private RestaurantManagerPanel app;
@@ -381,7 +395,11 @@ class SeatSelectPanel extends JPanel {
     }
 }
 
-class EditItemPanel extends JPanel {
+class EditItemPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     private static final long serialVersionUID = 1L;
 
     private final Controller controller;
@@ -646,7 +664,11 @@ class EditItemPanel extends JPanel {
 /***************************OHP with problems*****************************/
 
 
-class OrderHistoryPanel extends JPanel {
+class OrderHistoryPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     private static final long serialVersionUID = 1L;
 
     private JTextArea orderHistoryArea;
@@ -735,7 +757,11 @@ class OrderHistoryPanel extends JPanel {
  * Pulls live order data from the Controller and sorts by quantity.
  */
 
-    class TopItemsPanel extends JPanel {
+class TopItemsPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     private static final long serialVersionUID = 1L;
 
     private Controller controller;
@@ -811,7 +837,11 @@ class OrderHistoryPanel extends JPanel {
 
 
 
-class TableOverviewPanel extends JPanel {
+class TableOverviewPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     /**
 	 * 
 	 */
@@ -894,7 +924,11 @@ class TableOverviewPanel extends JPanel {
     }
 }
 
-class TipsPanel extends JPanel {
+class TipsPanel extends JPanel implements Observer {
+    @Override
+    public void update(Observable o, Object arg) {
+        // FIXME implement Observer.update()
+    }
     private static final long serialVersionUID = 1L;
     private JTextArea tipsReportArea;
     private Controller controller;

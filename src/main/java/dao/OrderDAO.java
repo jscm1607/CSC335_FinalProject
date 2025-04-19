@@ -14,13 +14,15 @@ public class OrderDAO extends DAO<Order, Integer> {
 
     @Override
     public int insert(Order entity) {
-        return db.executeInsert("INSERT INTO Orders (closed, tableNumber, tip, sessionId) VALUES (?, ?, ?, ?)",
+        int result = db.executeInsert("INSERT INTO Orders (closed, tableNumber, tip, sessionId) VALUES (?, ?, ?, ?)",
                 ps -> {
                     ps.setBoolean(1, entity.isClosed());
                     ps.setInt(2, entity.getTableNumber());
                     ps.setDouble(3, entity.getTip());
                     ps.setInt(4, entity.getSessionId());
                 });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
@@ -33,11 +35,12 @@ public class OrderDAO extends DAO<Order, Integer> {
                     ps.setInt(4, entity.getSessionId());
                     ps.setInt(5, entity.getId());
                 });
+        notifyDBChanged();
     }
 
     @Override
     public Order select(Integer id) {
-        return db.executeQuery("SELECT * FROM Orders WHERE id = ?", ps -> ps.setInt(1, id), rs -> {
+        Order result = db.executeQuery("SELECT * FROM Orders WHERE id = ?", ps -> ps.setInt(1, id), rs -> {
             if (rs.next()) {
                 return new Order(
                     rs.getInt("id"),
@@ -49,11 +52,13 @@ public class OrderDAO extends DAO<Order, Integer> {
             }
             return null;
         });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
     public List<Order> selectAll() {
-        return db.executeQuery("SELECT * FROM Orders", ps -> {}, rs -> {
+        List<Order> result = db.executeQuery("SELECT * FROM Orders", ps -> {}, rs -> {
             List<Order> orders = new ArrayList<>();
             while (rs.next()) {
                 Order order = new Order(
@@ -67,10 +72,13 @@ public class OrderDAO extends DAO<Order, Integer> {
             }
             return orders;
         });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
     public void delete(Integer id) {
         db.executeUpdate("DELETE FROM Orders WHERE id = ?", ps -> ps.setInt(1, id));
+        notifyDBChanged();
     }
 }

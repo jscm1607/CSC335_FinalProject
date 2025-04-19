@@ -14,7 +14,7 @@ public class OrderFoodDAO extends DAO<OrderFood, Integer> {
 
     @Override
     public int insert(OrderFood entity) {
-        return db.executeInsert("INSERT INTO OrderFood (seat, quantity, foodId, orderId, modifications) VALUES (?, ?, ?, ?, ?)",
+        int result = db.executeInsert("INSERT INTO OrderFood (seat, quantity, foodId, orderId, modifications) VALUES (?, ?, ?, ?, ?)",
                 ps -> {
                     ps.setInt(1, entity.getSeat());
                     ps.setInt(2, entity.getQuantity());
@@ -22,6 +22,8 @@ public class OrderFoodDAO extends DAO<OrderFood, Integer> {
                     ps.setInt(4, entity.getOrderId());
                     ps.setString(5, String.join(",", entity.getModifications()));
                 });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
@@ -35,11 +37,12 @@ public class OrderFoodDAO extends DAO<OrderFood, Integer> {
                     ps.setString(5, String.join(",", entity.getModifications()));
                     ps.setInt(6, entity.getId());
                 });
+        notifyDBChanged();
     }
 
     @Override
     public OrderFood select(Integer id) {
-        return db.executeQuery("SELECT * FROM OrderFood WHERE id = ?", ps -> ps.setInt(1, id), rs -> {
+        OrderFood result = db.executeQuery("SELECT * FROM OrderFood WHERE id = ?", ps -> ps.setInt(1, id), rs -> {
             if (rs.next()) {
                 return new OrderFood(
                     id,
@@ -52,11 +55,13 @@ public class OrderFoodDAO extends DAO<OrderFood, Integer> {
             }
             return null;
         });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
     public List<OrderFood> selectAll() {
-        return db.executeQuery("SELECT * FROM OrderFood", ps -> {}, rs -> {
+        List<OrderFood> result = db.executeQuery("SELECT * FROM OrderFood", ps -> {}, rs -> {
             List<OrderFood> orderFoods = new ArrayList<>();
             while (rs.next()) {
                 OrderFood orderFood = new OrderFood(
@@ -71,10 +76,13 @@ public class OrderFoodDAO extends DAO<OrderFood, Integer> {
             }
             return orderFoods;
         });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
     public void delete(Integer id) {
         db.executeUpdate("DELETE FROM OrderFood WHERE id = ?", ps -> ps.setInt(1, id));
+        notifyDBChanged();
     }
 }
