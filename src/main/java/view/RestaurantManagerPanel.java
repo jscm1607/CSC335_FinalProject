@@ -6,11 +6,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import controller.*;
 import model.*;
 import java.text.NumberFormat;
@@ -32,6 +35,7 @@ public class RestaurantManagerPanel extends JPanel {
     private int currentSessionId;
     private int currentOrderId;
     private Controller controller;
+    private Session session;
     
     private EditItemPanel editItemPanel;
 
@@ -60,7 +64,7 @@ public class RestaurantManagerPanel extends JPanel {
         screens.add(new OrderHistoryPanel(server), "OrderHistory");
 
         screens.add(new TopItemsPanel(), "TopItems");
-        screens.add(new TableOverviewPanel(), "TableOverview");
+        screens.add(new TableOverviewPanel(server), "TableOverview");
        // screens.add(new TipsPanel(), "Tips");
         screens.add(new TipsPanel(server), "Tips");
 
@@ -454,11 +458,23 @@ class EditItemPanel extends JPanel {
 
         JButton backBtn = new JButton("Back to Seat Select");
         backBtn.addActionListener(e -> parent.switchTo("SeatSelect"));
+        
+        JButton closeOrderBtn = new JButton("Close Order");
+		closeOrderBtn.addActionListener(e -> {
+			int orderId = controller.getOrderBySessionId(currentSession.getId()).getId();
+			if (controller.closeOrder(orderId)) {
+			    JOptionPane.showMessageDialog(this, "Order closed successfully.");
+			} else {
+			    JOptionPane.showMessageDialog(this, "Failed to close order.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			parent.switchTo("MainPOS");
+		});
 
         bottomPanel.add(tipLabel);
         bottomPanel.add(tipField);
         bottomPanel.add(tipUpdateBtn);
         bottomPanel.add(backBtn);
+        bottomPanel.add(closeOrderBtn);
 
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -636,6 +652,7 @@ class OrderHistoryPanel extends JPanel {
     private JTextArea orderHistoryArea;
     private Controller controller;
     private Server server;
+    private Session session;
 
     public OrderHistoryPanel(Server server) {
         this.server = server;
@@ -680,8 +697,7 @@ class OrderHistoryPanel extends JPanel {
 
                 // Add modifier costs
                 for (String mod : item.getModifications()) {
-                    itemCost += BURGER_MODS.getOrDefault(mod,
-                              FRIES_MODS.getOrDefault(mod, 0.0));
+                    itemCost += BURGER_MODS.getOrDefault(mod, FRIES_MODS.getOrDefault(mod, 0.0));
                 }
 
                 itemCost *= item.getQuantity();
@@ -696,18 +712,14 @@ class OrderHistoryPanel extends JPanel {
                 }
                 sb.append("\n");
             }
-            
-         // Fetch tip from the session, not order
+
+            // Fetch tip from the session, not order
             Session session = controller.getSessionById(order.getSessionId());
             double tip = session != null ? session.getTotalTips() : 0.0;
-
+            System.out.println("CLOSED " + order.isClosed());
             sb.append("Tip: $").append(String.format("%.2f", tip)).append("\n");
             sb.append("Total: $").append(String.format("%.2f", total + tip)).append("\n");
             sb.append("Closed: ").append(order.isClosed() ? "Yes" : "No").append("\n\n");
-
-
-//            sb.append("Total: $").append(String.format("%.2f", total)).append("\n");
-//            sb.append("Closed: ").append(order.isClosed() ? "Yes" : "No").append("\n\n");
         }
 
         orderHistoryArea.setText(sb.toString());
@@ -805,8 +817,13 @@ class TableOverviewPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTable tableStatusTable;
+	private DefaultTableModel tableModel;
+	private Controller controller;
+	private Server server;
 
-    public TableOverviewPanel() {
+    public TableOverviewPanel(Server server) {
+    	this.server = server;
+    	this.controller = new Controller();
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -815,16 +832,65 @@ class TableOverviewPanel extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         String[] columnNames = {"Table", "Status", "Server", "Guests"};
-        Object[][] data = {
+        /*Object[][] data = {
             {"1", "Occupied", "John", "4"},
             {"2", "Available", "-", "-"},
             {"3", "Occupied", "Alice", "2"},
             {"4", "Reserved", "-", "-"}
+        };*/
+        
+        tableModel = new DefaultTableModel(columnNames, 0) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table read-only
+            }
         };
 
-        tableStatusTable = new JTable(data, columnNames);
+        tableStatusTable = new JTable(tableModel);
+        tableStatusTable.setFillsViewportHeight(true);
         JScrollPane scrollPane = new JScrollPane(tableStatusTable);
         add(scrollPane, BorderLayout.CENTER);
+        
+        // Add refresh button
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(e -> refreshTableData());
+        add(refreshButton, BorderLayout.SOUTH);
+        
+        refreshTableData();
+    }
+
+    private void refreshTableData() {
+        // Clear existing data
+        tableModel.setRowCount(0);
+
+        // Get all orders
+        List<Order> orders = controller.getAllOrders();
+
+        // Sort orders by table number
+        orders.sort(Comparator.comparing(Order::getCreatedAt));
+
+        // Process each order
+        for (Order order : orders) {
+        	Session session = controller.getSessionById(order.getSessionId());
+            String serverName = server.getUsername();
+            System.out.println("SESSION ID " + session);
+            System.out.println("SERVER NAME " + serverName);
+            
+            // Add row to table
+            Object[] row = {
+                order.getTableNumber(),
+                order.isClosed() ? "Available" : "Occupied",
+                serverName,
+                //order.isClosed() ? "-" : controller.getSeatCountForOrder(order.getId())
+            };
+            tableModel.addRow(row);
+        }
+
+        // Refresh the table
+        tableStatusTable.revalidate();
+        tableStatusTable.repaint();
     }
 }
 
