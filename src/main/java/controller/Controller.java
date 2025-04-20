@@ -140,7 +140,17 @@ public class Controller {
     public List<Food> getAllFood() {
         return foodDAO.selectAll();
     }
+    
+	public double calculateTotal(int foodId) {
+		Food food = foodDAO.select(foodId);
+		return food != null ? food.getCost() : 0.0;
+	}
 
+	public Map<Integer, Double> calculateTotalsBySeat(int orderId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
     public List<Food> getFoodByCategory(String category) {
         return foodDAO.selectAll().stream()
                 .filter(food -> food.getCategory().toString().equalsIgnoreCase(category))
@@ -220,10 +230,7 @@ public class Controller {
     
     public FoodDAO getFoodDAO() {
         return this.foodDAO;
-    }
-
-    
-    
+    } 
     
 }
 

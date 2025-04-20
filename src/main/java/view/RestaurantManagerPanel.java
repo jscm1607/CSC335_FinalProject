@@ -507,7 +507,13 @@ class EditItemPanel extends JPanel implements Observer {
 			}
 			parent.switchTo("MainPOS");
 		});
-
+		
+		JButton payBillBtn = new JButton("Pay Bill");
+		payBillBtn.addActionListener(e -> {
+		    int orderId = controller.getOrderBySessionId(currentSession.getId()).getId();
+		    showPaymentDialog(orderId);
+		});
+		
         bottomPanel.add(tipLabel);
         bottomPanel.add(tipField);
         bottomPanel.add(tipUpdateBtn);
@@ -517,6 +523,96 @@ class EditItemPanel extends JPanel implements Observer {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    private void showPaymentDialog(int orderId) {
+	    double total = controller.calculateTotal(orderId);
+
+	    Object[] options = {"Pay in Full", "Split by Seat", "Split by Amount"};
+	    int choice = JOptionPane.showOptionDialog(this,
+	        "Total amount due: $" + String.format("%.2f", total),
+	        "Payment Options",
+	        JOptionPane.YES_NO_CANCEL_OPTION,
+	        JOptionPane.QUESTION_MESSAGE,
+	        null,
+	        options,
+	        options[0]);
+
+	    switch (choice) {
+	        case 0: // Pay in Full
+	            handlePayInFull(total);
+	            break;
+	        case 1: // Split by Seat
+	            handleSplitBySeat(orderId, total);
+	            break;
+	        case 2: // Split by Amount
+	            handleSplitByAmount(total);
+	            break;
+	    }
+	}
+
+	private void handlePayInFull(double total) {
+	    JOptionPane.showMessageDialog(this, 
+	        "Payment processed: $" + String.format("%.2f", total),
+	        "Payment Complete",
+	        JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private void handleSplitBySeat(int orderId, double total) {
+	    Map<Integer, Double> seatTotals = controller.calculateTotalsBySeat(orderId);
+	    StringBuilder message = new StringBuilder("Split by seat:\n\n");
+	    for (Map.Entry<Integer, Double> entry : seatTotals.entrySet()) {
+	        message.append(String.format("Seat %d: $%.2f\n", 
+	            entry.getKey(), entry.getValue()));
+	    }
+	    JOptionPane.showMessageDialog(this, message.toString());
+	}
+
+	private void handleSplitByAmount(double total) {
+	    String input = null;
+	    while (input == null || input.isEmpty()) {
+	        input = JOptionPane.showInputDialog(this,
+	            "Total amount: $" + String.format("%.2f", total) + "\nEnter amount for payment:",
+	            "Split by Amount",
+	            JOptionPane.QUESTION_MESSAGE);
+
+	        if (input == null) {
+	            return; // User clicked cancel
+	        }
+
+	        try {
+	            double amount = Double.parseDouble(input);
+	            if (amount <= 0 || amount > total) {
+	                JOptionPane.showMessageDialog(this,
+	                    "Please enter a valid amount between $0.01 and $" + String.format("%.2f", total),
+	                    "Invalid Amount",
+	                    JOptionPane.ERROR_MESSAGE);
+	                input = null;
+	                continue;
+	            }
+
+	            double remaining = total - amount;
+	            if (remaining > 0) {
+	                String message = String.format("Payment of $%.2f processed.\nRemaining balance: $%.2f", amount, remaining);
+	                JOptionPane.showMessageDialog(this, message, "Payment Progress", JOptionPane.INFORMATION_MESSAGE);
+	                total = remaining;
+	                input = null;
+	            } else {
+	                JOptionPane.showMessageDialog(this,
+	                    String.format("Final payment of $%.2f processed.\nBill fully paid!", amount),
+	                    "Payment Complete",
+	                    JOptionPane.INFORMATION_MESSAGE);
+	            }
+
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(this,
+	                "Please enter a valid number",
+	                "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	            input = null;
+	        }
+	    }
+	}
+
+    
     public void refreshData() {
         int sessionId = parent.getCurrentSessionId();
         this.selectedSeat = parent.getCurrentSeatNumber();
