@@ -886,12 +886,6 @@ class TableOverviewPanel extends JPanel implements Observer {
         add(titleLabel, BorderLayout.NORTH);
 
         String[] columnNames = {"Table", "Status", "Server", "Guests"};
-        /*Object[][] data = {
-            {"1", "Occupied", "John", "4"},
-            {"2", "Available", "-", "-"},
-            {"3", "Occupied", "Alice", "2"},
-            {"4", "Reserved", "-", "-"}
-        };*/
         
         tableModel = new DefaultTableModel(columnNames, 0) {
 			private static final long serialVersionUID = 1L;
@@ -922,11 +916,25 @@ class TableOverviewPanel extends JPanel implements Observer {
         // Get all orders
         List<Order> orders = controller.getAllOrders();
 
-        // Sort orders by table number
-        orders.sort(Comparator.comparing(Order::getCreatedAt));
+        Map<Integer, Order> latestOrderByTable = new HashMap<>();
+
+        for (Order order : orders) {
+            int table = order.getTableNumber();
+
+            if (!latestOrderByTable.containsKey(table) ||
+                order.getCreatedAt().after(latestOrderByTable.get(table).getCreatedAt())) {
+                
+                latestOrderByTable.put(table, order);  // keep the newer order
+            }
+        }
+
+        List<Order> latestOrders = new ArrayList<>(latestOrderByTable.values());
+
+        // Optional: sort by table number
+        latestOrders.sort(Comparator.comparing(Order::getTableNumber));
 
         // Process each order
-        for (Order order : orders) {
+        for (Order order : latestOrders) {
         	Session session = controller.getSessionById(order.getSessionId());
             String serverName = server.getUsername();
             System.out.println("SESSION ID " + session);

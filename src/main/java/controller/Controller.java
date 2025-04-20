@@ -97,9 +97,12 @@ public class Controller {
 	public boolean closeOrder(int orderId) {
 	    Order order = orderDAO.select(orderId);
 	    if (order != null && !order.isClosed()) {
-	        order.setClosed(true);
+	    	System.out.println("PRE " + order);
+	    	// create new obj because immutability
+	        Order closedOrder = order.setClosed(true);
 	        System.out.println("Order " + orderId + " closed.");
-	        orderDAO.update(order);
+	        orderDAO.update(closedOrder);
+	        System.out.println("POST " + order);
 	        return true;
 	    }
 	    return false;
