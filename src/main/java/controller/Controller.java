@@ -111,11 +111,6 @@ public class Controller {
 	public List<Order> getAllOrders() {
 	    return orderDAO.selectAll();
 	}
-	
-//	public int getSeatCountForOrder(int orderId) {
-//	    Order order = orderDAO.select(orderId);
-//	    return order != null ? orderDAO.getSeatCount(orderId) : 0;
-//	}
     
     // OrderFood
     public void addFoodToOrder(int orderId, int foodId, int seat, int quantity, String[] modifications) {
@@ -141,14 +136,74 @@ public class Controller {
         return foodDAO.selectAll();
     }
     
-	public double calculateTotal(int foodId) {
-		Food food = foodDAO.select(foodId);
-		return food != null ? food.getCost() : 0.0;
-	}
+    public double calculateTotal(int orderId) {
+    	// get all order items for the order
+        List<OrderFood> orderItems = orderFoodDAO.selectAll().stream()
+            .filter(item -> item.getOrderId() == orderId)
+            .collect(Collectors.toList());
+
+        double total = 0.0;
+        for (OrderFood item : orderItems) {
+            Food food = foodDAO.select(item.getFoodId());
+            if (food != null) {
+                // COST W/O MODIFICATIONS
+                double itemCost = food.getCost();
+
+                // MODIFICATIONS
+                for (String modif : item.getModifications()) {
+                    if (food.getCategory() == Food.Category.BURGERS) {
+                        itemCost += getBurgerModificationPrice(modif);
+                    } else if (food.getCategory() == Food.Category.FRIES) {
+                        itemCost += getFriesModificationPrice(modif);
+                    }
+                }
+
+                // TOTAL
+                itemCost *= item.getQuantity();
+                total += itemCost;
+            }
+        }
+        return total;
+    }
+
+    private double getBurgerModificationPrice(String modif) {
+        Map<String, Double> burgerModifications = Map.of(
+            "No Lettuce", 0.00,
+            "Extra Patty", 1.50,
+            "Add Cheese", 0.75,
+            "No Pickles", 0.00,
+            "Extra Tomato", 0.50
+        );
+        return burgerModifications.getOrDefault(modif, 0.0);
+    }
+
+    private double getFriesModificationPrice(String modif) {
+        Map<String, Double> friesModifications = Map.of(
+        	"Jumbo Size", 1.00,
+        	"Animal Style", 1.50
+        );
+        return friesModifications.getOrDefault(modif, 0.0);
+    }
 
 	public Map<Integer, Double> calculateTotalsBySeat(int orderId) {
-		// TODO Auto-generated method stub
-		return null;
+		List<OrderFood> orderItems = orderFoodDAO.selectAll().stream()
+				.filter(item -> item.getOrderId() == orderId)
+				.collect(Collectors.toList());
+
+		Map<Integer, Double> seatTotals = new HashMap<>();
+		for (OrderFood item : orderItems) {
+			Food food = foodDAO.select(item.getFoodId());
+			if (food != null) {
+				double itemCost = food.getCost();
+				for (String modif : item.getModifications()) {
+					itemCost += getBurgerModificationPrice(modif)
+							+ getFriesModificationPrice(modif);
+				}
+				itemCost *= item.getQuantity();
+				seatTotals.merge(item.getSeat(), itemCost, Double::sum);
+			}
+		}
+		return seatTotals;
 	}
 	
     public List<Food> getFoodByCategory(String category) {

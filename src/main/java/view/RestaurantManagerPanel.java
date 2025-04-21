@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -379,8 +380,129 @@ class SeatSelectPanel extends JPanel implements Observer {
         seatsPanel = new JPanel(new GridLayout(0, 4, 15, 15));
         seatsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(seatsPanel, BorderLayout.CENTER);
+        
+        // Add Pay Bill button to bottom right
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton payBillBtn = new JButton("Pay Bill");
+        payBillBtn.addActionListener(e -> {
+        	System.out.println("SESSION ID " + app.getCurrentSessionId());
+        	System.out.println("ORDER ID " + app.getCurrentOrderId());
+            int orderId = app.getCurrentOrderId();
+            showPaymentDialog(orderId);
+        });
+        bottomPanel.add(payBillBtn);
+        add(bottomPanel, BorderLayout.SOUTH);
+    }
+    
+    // Add the payment dialog methods
+    private void showPaymentDialog(int orderId) {
+        System.out.println("Calculating total for Order ID: " + orderId);
+        double total = controller.calculateTotal(orderId);
+        System.out.println("Total calculated: $" + String.format("%.2f", total));
+
+        // If total is 0, check if there are any items
+        List<OrderFood> items = controller.getOrderItems(orderId);
+        System.out.println("Number of items in order: " + items.size());
+        for (OrderFood item : items) {
+            Food food = controller.getFoodById(item.getFoodId());
+            System.out.println("Item: " + food.getName() + ", Quantity: " + item.getQuantity() + ", Cost: $" + food.getCost());
+        }
+
+        Object[] options = {"Pay in Full", "Split by Seat", "Split by Amount"};
+        int choice = JOptionPane.showOptionDialog(this,
+            "Total amount due: $" + String.format("%.2f", total),
+            "Payment Options",
+            JOptionPane.YES_NO_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            options,
+            options[0]);
+
+        switch (choice) {
+            case 0: // Pay in Full
+                handlePayInFull(total);
+                break;
+            case 1: // Split by Seat
+                handleSplitBySeat(orderId, total);
+                break;
+            case 2: // Split by Amount
+                handleSplitByAmount(total);
+                break;
+        }
     }
 
+    private void handlePayInFull(double total) {
+        JOptionPane.showMessageDialog(this,
+            "Payment processed: $" + String.format("%.2f", total),
+            "Payment Complete",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void handleSplitBySeat(int orderId, double total) {
+        Map<Integer, Double> seatTotals = controller.calculateTotalsBySeat(orderId);
+        System.out.println("Seat totals: " + seatTotals);
+        StringBuilder message = new StringBuilder("Split by seat:\n\n");
+        for (Map.Entry<Integer, Double> entry : seatTotals.entrySet()) {
+            message.append(String.format("Seat %d: $%.2f\n",
+                entry.getKey(), entry.getValue()));
+        }
+        // Show seat totals first
+        JOptionPane.showMessageDialog(this, message.toString(),
+            "Seat Totals", JOptionPane.INFORMATION_MESSAGE);
+
+        // Show payment confirmation dialog
+        int option = JOptionPane.showConfirmDialog(this,
+            "Proceed with payment for all seats?",
+            "Payment Confirmation",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.OK_OPTION) {
+            JOptionPane.showMessageDialog(this,
+                String.format("Payment processed!\nTotal paid: $%.2f", total),
+                "Payment Complete",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void handleSplitByAmount(double total) {
+        // Get number of occupied seats
+        int seatCount = controller.getOrderItems(app.getCurrentOrderId()).stream()
+            .map(OrderFood::getSeat)
+            .distinct()
+            .collect(Collectors.toList())
+            .size();
+
+        if (seatCount <= 0) {
+            JOptionPane.showMessageDialog(this,
+                "No seats found with orders",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Calculate equal split amount
+        double amountPerSeat = Math.round((total / seatCount) * 100.0) / 100.0;
+
+        StringBuilder message = new StringBuilder();
+        message.append(String.format("Total bill: $%.2f\n", total));
+        message.append(String.format("Number of seats: %d\n", seatCount));
+        message.append(String.format("Each seat will pay: $%.2f\n", amountPerSeat));
+
+        int option = JOptionPane.showConfirmDialog(this,
+            message.toString(),
+            "Equal Split Confirmation",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.INFORMATION_MESSAGE);
+
+        if (option == JOptionPane.OK_OPTION) {
+            JOptionPane.showMessageDialog(this,
+                String.format("Bill fully paid!\nTotal paid: $%.2f", total),
+                "Payment Complete",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
     public void refresh() {
         seatsPanel.removeAll();
 
@@ -508,12 +630,6 @@ class EditItemPanel extends JPanel implements Observer {
 			parent.switchTo("MainPOS");
 		});
 		
-		JButton payBillBtn = new JButton("Pay Bill");
-		payBillBtn.addActionListener(e -> {
-		    int orderId = controller.getOrderBySessionId(currentSession.getId()).getId();
-		    showPaymentDialog(orderId);
-		});
-		
         bottomPanel.add(tipLabel);
         bottomPanel.add(tipField);
         bottomPanel.add(tipUpdateBtn);
@@ -522,95 +638,6 @@ class EditItemPanel extends JPanel implements Observer {
 
         add(bottomPanel, BorderLayout.SOUTH);
     }
-
-    private void showPaymentDialog(int orderId) {
-	    double total = controller.calculateTotal(orderId);
-
-	    Object[] options = {"Pay in Full", "Split by Seat", "Split by Amount"};
-	    int choice = JOptionPane.showOptionDialog(this,
-	        "Total amount due: $" + String.format("%.2f", total),
-	        "Payment Options",
-	        JOptionPane.YES_NO_CANCEL_OPTION,
-	        JOptionPane.QUESTION_MESSAGE,
-	        null,
-	        options,
-	        options[0]);
-
-	    switch (choice) {
-	        case 0: // Pay in Full
-	            handlePayInFull(total);
-	            break;
-	        case 1: // Split by Seat
-	            handleSplitBySeat(orderId, total);
-	            break;
-	        case 2: // Split by Amount
-	            handleSplitByAmount(total);
-	            break;
-	    }
-	}
-
-	private void handlePayInFull(double total) {
-	    JOptionPane.showMessageDialog(this, 
-	        "Payment processed: $" + String.format("%.2f", total),
-	        "Payment Complete",
-	        JOptionPane.INFORMATION_MESSAGE);
-	}
-
-	private void handleSplitBySeat(int orderId, double total) {
-	    Map<Integer, Double> seatTotals = controller.calculateTotalsBySeat(orderId);
-	    StringBuilder message = new StringBuilder("Split by seat:\n\n");
-	    for (Map.Entry<Integer, Double> entry : seatTotals.entrySet()) {
-	        message.append(String.format("Seat %d: $%.2f\n", 
-	            entry.getKey(), entry.getValue()));
-	    }
-	    JOptionPane.showMessageDialog(this, message.toString());
-	}
-
-	private void handleSplitByAmount(double total) {
-	    String input = null;
-	    while (input == null || input.isEmpty()) {
-	        input = JOptionPane.showInputDialog(this,
-	            "Total amount: $" + String.format("%.2f", total) + "\nEnter amount for payment:",
-	            "Split by Amount",
-	            JOptionPane.QUESTION_MESSAGE);
-
-	        if (input == null) {
-	            return; // User clicked cancel
-	        }
-
-	        try {
-	            double amount = Double.parseDouble(input);
-	            if (amount <= 0 || amount > total) {
-	                JOptionPane.showMessageDialog(this,
-	                    "Please enter a valid amount between $0.01 and $" + String.format("%.2f", total),
-	                    "Invalid Amount",
-	                    JOptionPane.ERROR_MESSAGE);
-	                input = null;
-	                continue;
-	            }
-
-	            double remaining = total - amount;
-	            if (remaining > 0) {
-	                String message = String.format("Payment of $%.2f processed.\nRemaining balance: $%.2f", amount, remaining);
-	                JOptionPane.showMessageDialog(this, message, "Payment Progress", JOptionPane.INFORMATION_MESSAGE);
-	                total = remaining;
-	                input = null;
-	            } else {
-	                JOptionPane.showMessageDialog(this,
-	                    String.format("Final payment of $%.2f processed.\nBill fully paid!", amount),
-	                    "Payment Complete",
-	                    JOptionPane.INFORMATION_MESSAGE);
-	            }
-
-	        } catch (NumberFormatException ex) {
-	            JOptionPane.showMessageDialog(this,
-	                "Please enter a valid number",
-	                "Error",
-	                JOptionPane.ERROR_MESSAGE);
-	            input = null;
-	        }
-	    }
-	}
 
     
     public void refreshData() {
