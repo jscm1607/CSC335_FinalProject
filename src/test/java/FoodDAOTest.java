@@ -162,4 +162,11 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         assertEquals(food1Profit, profits.get(food1.getName()));
         assertEquals(food2Profit, profits.get(food2.getName()));
     }
+
+    @Test
+    void testFoodNoSelect(){
+        assertEquals(dao.select(0),null);
+        Food food = randomFood();
+        assertEquals(dao.getNumFoodOrdersByFoodId(food.getId()),0);
+    }
 }

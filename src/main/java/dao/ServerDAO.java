@@ -84,7 +84,8 @@ public class ServerDAO extends DAO<Server, String> {
                                 resultSet.getBoolean("closed"),
                                 resultSet.getInt("tableNumber"),
                                 resultSet.getDouble("tip"),
-                                resultSet.getInt("sessionId")));
+                                resultSet.getInt("sessionId"),
+                                resultSet.getDate("createdAt")));
                     }
                     return ordersList;
                 });

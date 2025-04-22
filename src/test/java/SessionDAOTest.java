@@ -61,7 +61,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         for (int i = 0; i < 10; i++) {
             double tip = (Math.random() * 100);
             aggregatedTips += tip;
-            Order temp_order = new Order(false, i, tip, session.getId());
+            Order temp_order = new Order(false, i, tip, session.getId(), new Date());
             assertTrue(temp_order.getId() > -2);
         }
 

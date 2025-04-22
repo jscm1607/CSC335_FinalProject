@@ -56,7 +56,7 @@ public class DBM implements AutoCloseable {
     /**
      * H2 Console (Web UI) for database management.
      */
-    private void runH2Console() {
+    public void runH2Console() {
         try {
             Server.main("-web", "-webAllowOthers", "-webPort", "8082");
             System.out.println("H2 Console started at: http://localhost:8082");

@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 import dao.OrderDAO;
 
 public class Order {
@@ -17,7 +19,7 @@ public class Order {
 	private java.util.Date createdAt = new java.util.Date();  // default to now, will require better implementation?
 	
 	// CONSTRUCTOR
-	public Order(int id, boolean closed, int tableNumber, double tip, int sessionId) {
+	public Order(int id, boolean closed, int tableNumber, double tip, int sessionId, Date createdAt) {
 		super();
 		this.id = id;
 		this.closed = closed;
@@ -26,7 +28,7 @@ public class Order {
 		this.sessionId = sessionId;
 	}
 
-	public Order(boolean closed, int tableNumber, double tip, int sessionId) {
+	public Order(boolean closed, int tableNumber, double tip, int sessionId, Date createdAt) {
 		super();
 		this.closed = closed;
 		this.tableNumber = tableNumber;
@@ -45,7 +47,7 @@ public class Order {
 	}
 
 	public Order setClosed(boolean closed) {
-		Order out = new Order(id, closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId, createdAt);
 		dao.update(out);
 		return out;
 	}
@@ -55,7 +57,7 @@ public class Order {
 	}
 
 	public Order setTableNumber(int tableNumber) {
-		Order out = new Order(id, closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId, createdAt);
 		dao.update(out);
 		return out;
 	}
@@ -65,7 +67,7 @@ public class Order {
 	}
 
 	public Order setTip(double tip) {
-		Order out = new Order(id, closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId, createdAt);
 		dao.update(out);
 		return out;
 	}
@@ -75,14 +77,9 @@ public class Order {
 	}
 
 	public Order setSessionId(int sessionId) {
-		Order out = new Order(id, closed, tableNumber, tip, sessionId);
+		Order out = new Order(id, closed, tableNumber, tip, sessionId, createdAt);
 		dao.update(out);
 		return out;
-	}
-	
-	//get total cost
-	public double getTotalCost() {
-	    return totalCost;
 	}
 	
 	
@@ -90,8 +87,10 @@ public class Order {
 	    return createdAt;
 	}
 
-	public void setCreatedAt(java.util.Date createdAt) {
-	    this.createdAt = createdAt;
+	public Order setCreatedAt(java.util.Date createdAt) {
+		Order out = new Order(id, closed, tableNumber, tip, sessionId, createdAt);
+		dao.update(out);
+		return out;
 	}
 	
 	@Override

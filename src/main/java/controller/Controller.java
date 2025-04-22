@@ -1,11 +1,25 @@
 package controller;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Observer;
+import java.util.Set;
 
-import dao.*;
-import model.*;
+import dao.FoodDAO;
+import dao.OrderDAO;
+import dao.OrderFoodDAO;
+import dao.ServerDAO;
+import dao.SessionDAO;
+import model.Food;
+import model.Order;
+import model.OrderFood;
+import model.Server;
+import model.Session;
 
 public class Controller {
     private ServerDAO serverDAO;
@@ -67,7 +81,7 @@ public class Controller {
 
     // Order
     public int createOrder(int tableNumber, int sessionId) {
-        Order order = new Order(false, tableNumber, 0.0, sessionId);
+        Order order = new Order(false, tableNumber, 0.0, sessionId, new Date());
         return order.getId();
     }
 

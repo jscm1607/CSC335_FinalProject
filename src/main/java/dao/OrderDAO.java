@@ -47,7 +47,8 @@ public class OrderDAO extends DAO<Order, Integer> {
                     rs.getBoolean("closed"),
                     rs.getInt("tableNumber"),
                     rs.getDouble("tip"),
-                    rs.getInt("sessionId")
+                    rs.getInt("sessionId"),
+                    rs.getDate("createdAt")
                 );
             }
             return null;
@@ -66,7 +67,8 @@ public class OrderDAO extends DAO<Order, Integer> {
                     rs.getBoolean("closed"),
                     rs.getInt("tableNumber"),
                     rs.getDouble("tip"),
-                    rs.getInt("sessionId")
+                    rs.getInt("sessionId"),
+                    rs.getDate("createdAt")
                 );
                 orders.add(order);
             }

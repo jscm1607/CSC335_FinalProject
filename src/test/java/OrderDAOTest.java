@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -24,7 +25,7 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
     }
 
     public static Order randomOrder(Session session) {
-        return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId());
+        return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId(), new Date((int) Math.random() * 1000000000));
     }
 
     static Order randomValidOrder() {
@@ -147,5 +148,8 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         assertEquals(tableNumber + 1, order.getTableNumber());
         order = order.setTip(tip + 1.0);
         assertEquals(tip + 1.0, order.getTip());
+        Date newDate = new java.util.Date();
+        order = order.setCreatedAt(newDate);
+        assertEquals(newDate, order.getCreatedAt());
     }
 }

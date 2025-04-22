@@ -125,7 +125,8 @@ public class SessionDAO extends DAO<Session, Integer> {
                     rs.getBoolean("closed"),
                     rs.getInt("tableNumber"),
                     rs.getDouble("tip"),
-                    rs.getInt("sessionId")
+                    rs.getInt("sessionId"),
+                    rs.getDate("createdAt")
                 ));
             }
             return result;
