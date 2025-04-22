@@ -21,6 +21,7 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
 
     public OrderFoodDAOTest() {
         this.dao = new OrderFoodDAO(db);
+        db.runH2Console();
     }
 
     public static OrderFood randomOrderFood(Food food, Order order) {
@@ -140,5 +141,17 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
     @Test
     void testOrderFoodSelectNonExistent() {
         assertNull(dao.select(99999), "Should return null for non-existent OrderFood");
+    }
+
+    @Test
+    void testOrderFoodModifications() {
+        OrderFood of = randomValidOrderFood();
+        assertTrue(of.getId() >= 0);
+        String[] modifications = { "Extra cheese", "No onions", "Spicy", "No garlic" };
+        of = of.setModifications(modifications);
+        assertEquals(modifications.length, of.getModifications().length);
+        assertEquals(of.toString(), "OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=%s}".formatted(of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId(), String.join(", ", modifications)));
+        of = of.setModifications(null);
+        assertEquals(of.toString(), "OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=[]}".formatted(of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId()));
     }
 }

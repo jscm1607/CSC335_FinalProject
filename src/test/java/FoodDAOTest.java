@@ -18,6 +18,7 @@ import model.OrderFood;
 public class FoodDAOTest extends DAOTest<FoodDAO> {
     public FoodDAOTest() {
         this.dao = new FoodDAO(db);
+        db.runH2Console();
     }
 
     public static Food randomFood() {
@@ -121,6 +122,22 @@ public class FoodDAOTest extends DAOTest<FoodDAO> {
         }
         assertEquals(food1Count, dao.getNumFoodOrdersByFoodId(food1.getId()));
         assertEquals(food2Count, dao.getNumFoodOrdersByFoodId(food2.getId()));
+    }
+
+    @Test
+    void testFoodVariousGettersSetters(){
+        Food food = randomFood();
+        assertTrue(food.getId() > -2);
+        String name = food.getName();
+        food = food.setName(name + " updated");
+        Food.Category category = food.getCategory();
+        Food.Category newCategory = Food.Category.values()[category.ordinal()+1 % Food.Category.values().length-1];
+        food = food.setCategory(newCategory);
+        boolean instock = food.isInStock();
+        food = food.setInStock(!instock);
+        assertEquals(food.getName(), name + " updated");
+        assertEquals(food.getCategory(), newCategory);
+        assertEquals(food.isInStock(), !instock);
     }
 
     @Test

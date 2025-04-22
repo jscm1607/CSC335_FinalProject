@@ -25,6 +25,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
     public SessionDAOTest() {
         this.dao = new SessionDAO(db);
         this.serverDao = new ServerDAO(db);
+        db.runH2Console();
     }
 
     public static Session randomSession(Server server) {
@@ -87,9 +88,9 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
             assertTrue(temp_order.getId() > -2);
         }
 
-        List<Order> resultOrders = dao.getOrders(session.getId());
+        List<Order> resultOrders = session.getOrders();
         assertEquals(orders.size(), resultOrders.size());
-        List<Order> resultSeperateOrders = dao.getOrders(session.getId());
+        List<Order> resultSeperateOrders = seperateSession.getOrders();
         assertEquals(seperateOrders.size(), resultSeperateOrders.size());
     }
 
@@ -232,5 +233,23 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
             assertEquals(expected.isOpen(), actual.isOpen());
             assertTrue(Math.abs(expected.getDate().getTime() - actual.getDate().getTime()) < 1000);
         }
+    }
+
+    @Test
+    void testSessionSetDate(){
+        Session session = randomSession(ServerDAOTest.randomServer());
+        assertTrue(session.getId() > -2);
+        Date newDate = new Date(System.currentTimeMillis() + 1000);
+        session = session.setDate(newDate);
+        assertEquals(newDate.getTime(), session.getDate().getTime(), 10);
+    }
+
+    @Test
+    void testSessionToString() {
+        Session session = randomSession(ServerDAOTest.randomServer());
+        String expectedString = "Session{date=" + session.getDate() +
+                ", server=" + session.getServer() +
+                ", open=" + session.isOpen() + "}";
+        assertEquals(expectedString, session.toString());
     }
 }

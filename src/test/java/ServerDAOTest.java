@@ -18,6 +18,7 @@ import model.Session;
 public class ServerDAOTest extends DAOTest<ServerDAO> {
     public ServerDAOTest() {
         this.dao = new ServerDAO(db);
+        db.runH2Console();
     }
 
     public static Server randomServer() {
@@ -122,6 +123,16 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
         assertEquals(before, dao.selectAll().size());
     }
 
+    @Test
+    void testServerSetUsername(){
+        Server server = randomServer();
+        String newUsername = "newUser" + System.currentTimeMillis();
+        server = server.setUsername(newUsername);
+        assertEquals(newUsername, server.getUsername());
+    }
 
-
+    @Test
+    void testServerSelectNull(){
+        assertEquals(null, dao.select(""));
+    }
 }

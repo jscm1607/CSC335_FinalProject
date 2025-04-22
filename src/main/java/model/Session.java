@@ -80,7 +80,7 @@ public class Session {
 	public String toString() {
 		return "Session{date=" + date +
 			   ", server=" + serverId +
-			   ", open=" + open;
+			   ", open=" + open+"}";
 	}
 
 	

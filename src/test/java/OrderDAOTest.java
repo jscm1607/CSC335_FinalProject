@@ -20,6 +20,7 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
 
     public OrderDAOTest() {
         this.dao = new OrderDAO(db);
+        db.runH2Console();
     }
 
     public static Order randomOrder(Session session) {
@@ -134,5 +135,17 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         // Select non-existent order
         Order res = dao.select(99999);
         assertNull(res);
+    }
+
+    @Test
+    void testOrderVariousSetterGetters(){
+        Order order = randomValidOrder();
+        assertTrue(order.getId() > -2);
+        int tableNumber = order.getTableNumber();
+        double tip = order.getTip();
+        order = order.setTableNumber(tableNumber + 1);
+        assertEquals(tableNumber + 1, order.getTableNumber());
+        order = order.setTip(tip + 1.0);
+        assertEquals(tip + 1.0, order.getTip());
     }
 }
