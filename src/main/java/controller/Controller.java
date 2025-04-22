@@ -13,6 +13,7 @@ public class Controller {
     private FoodDAO foodDAO;
     private OrderDAO orderDAO;
     private OrderFoodDAO orderFoodDAO;
+    private DBM dbm;
 
     public Controller() {
         this.serverDAO = new ServerDAO();
@@ -20,6 +21,7 @@ public class Controller {
         this.foodDAO = new FoodDAO();
         this.orderDAO = new OrderDAO();
         this.orderFoodDAO = new OrderFoodDAO();
+        this.dbm = new DBM();
     }
 
     // DAO registration for observers
@@ -66,6 +68,16 @@ public class Controller {
     }
 
     // Order
+    public int getSeatCountByOrderId(int orderId) {
+        return dbm.executeQuery("SELECT MAX(seat) AS highest_seat_number FROM OrderFood WHERE orderId = ?;",
+                ps -> ps.setInt(1, orderId), rs -> {
+                    if (rs.next()) {
+                        return rs.getInt("highest_seat_number");
+                    }
+                    return 0; // No seats found
+                });
+    }
+
     public int createOrder(int tableNumber, int sessionId) {
         Order order = new Order(false, tableNumber, 0.0, sessionId);
         return order.getId();

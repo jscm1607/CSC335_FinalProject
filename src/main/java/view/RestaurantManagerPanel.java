@@ -336,15 +336,30 @@ class AssignTablePanel extends JPanel implements Observer {
             int tableNumber = Integer.parseInt(tableNumberField.getText().trim());
             int seats = Integer.parseInt(seatCountField.getText().trim());
 
-            int sessionId = controller.createSession(server);
-            app.setCurrentSessionId(sessionId);
+            Order existingOrder = controller.getAllOrders().stream()
+                .filter(order -> order.getTableNumber() == tableNumber && !order.isClosed())
+                .findFirst()
+                .orElse(null);
 
-            int orderId = controller.createOrder(tableNumber, sessionId);
-            app.setCurrentOrderId(orderId);
-
-            app.setLastAssignedTable(tableNumber);
-            app.setSeatCount(seats);
-            app.switchTo("SeatSelect");
+            // If exists and open, fetch existing order for this table
+            if (existingOrder != null) {
+                app.setCurrentSessionId(existingOrder.getSessionId());
+                app.setCurrentOrderId(existingOrder.getId());
+                app.setLastAssignedTable(tableNumber);
+                app.setSeatCount(controller.getSeatCountByOrderId(existingOrder.getId()));
+                app.switchTo("SeatSelect");
+            }
+            else { // else create a new
+                int sessionId = controller.createSession(server);
+                app.setCurrentSessionId(sessionId);
+    
+                int orderId = controller.createOrder(tableNumber, sessionId);
+                app.setCurrentOrderId(orderId);
+    
+                app.setLastAssignedTable(tableNumber);
+                app.setSeatCount(seats);
+                app.switchTo("SeatSelect");
+            }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Please enter valid numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
         }
