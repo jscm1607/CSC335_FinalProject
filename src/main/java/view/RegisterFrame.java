@@ -57,6 +57,28 @@ public class RegisterFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Username and password cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        
+        // Username validation
+        if (username.length() < 6) {
+            JOptionPane.showMessageDialog(this, "Username must be at least 6 characters long.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Password validation
+        if (password.length() < 8) {
+            JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (!password.matches(".*\\d.*")) {
+            JOptionPane.showMessageDialog(this, "Password must contain at least one number.", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (!password.matches(".*[^a-zA-Z0-9].*")) {
+            JOptionPane.showMessageDialog(this, "Password must contain at least one special character (non-alphabetic).", "Input Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         if (serverDAO.select(username) != null) {
             JOptionPane.showMessageDialog(this, "Username already exists.", "Account Creation Failed", JOptionPane.ERROR_MESSAGE);

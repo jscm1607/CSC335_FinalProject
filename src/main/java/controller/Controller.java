@@ -54,9 +54,15 @@ public class Controller {
 
     public List<Session> getSessionsForServer(int serverId) {
         List<Session> allSessions = sessionDAO.selectAll();
-        return allSessions.stream()
-                .filter(s -> s.getServer() == serverId)
-                .collect(Collectors.toList());
+        List<Session> serverSessions = new ArrayList<>();
+        
+        for (Session session : allSessions) {
+            if (session.getServer() == serverId) {
+                serverSessions.add(session);
+            }
+        }
+        
+        return serverSessions;
     }
 
     // Order
@@ -71,26 +77,47 @@ public class Controller {
 
     public Order getOrderBySessionId(int sessionId) {
         List<Order> orders = orderDAO.selectAll();
-        return orders.stream()
-                .filter(o -> o.getSessionId() == sessionId && !o.isClosed())
-                .findFirst()
-                .orElse(null);
+        
+		for (Order order : orders) {
+			if (order.getSessionId() == sessionId && !order.isClosed()) {
+				return order;
+			}
+		}
+		
+		return null;
     }
 
     public List<Order> getOrdersForServer(int serverId) {
         List<Session> sessions = getSessionsForServer(serverId);
-        Set<Integer> sessionIds = sessions.stream()
-                .map(Session::getId)
-                .collect(Collectors.toSet());
-        return orderDAO.selectAll().stream()
-                .filter(order -> sessionIds.contains(order.getSessionId()))
-                .collect(Collectors.toList());
+        Set<Integer> sessionIds = new HashSet<>();
+        
+		for (Session session : sessions) {
+			sessionIds.add(session.getId());
+		}
+		
+		List<Order> orders = orderDAO.selectAll();
+		List<Order> serverOrders = new ArrayList<>();
+		
+		for (Order order : orders) {
+			if (sessionIds.contains(order.getSessionId())) {
+				serverOrders.add(order);
+			}
+		}
+		
+		return serverOrders;
     }
 
     public List<Order> getOrdersForSession(int sessionId) {
-        return orderDAO.selectAll().stream()
-                .filter(order -> order.getSessionId() == sessionId)
-                .collect(Collectors.toList());
+    	List<Order> orders = orderDAO.selectAll();
+    	List<Order> sessionOrders = new ArrayList<>();
+    	
+    	for (Order order : orders) {
+			if (order.getSessionId() == sessionId) {
+				sessionOrders.add(order);
+			}
+    	}
+    	
+    	return sessionOrders;
     }
 
     /// 04/18
@@ -126,9 +153,16 @@ public class Controller {
     }
 
     public List<OrderFood> getOrderItems(int orderId) {
-        return orderFoodDAO.selectAll().stream()
-                .filter(item -> item.getOrderId() == orderId)
-                .collect(Collectors.toList());
+    	List<OrderFood> orderFoodItems = orderFoodDAO.selectAll();
+    	List<OrderFood> orderItems = new ArrayList<>();
+    	
+    	for (OrderFood of : orderFoodItems) {
+			if (of.getOrderId() == orderId) {
+				orderItems.add(of);
+			}
+    	}
+    	
+    	return orderItems;
     }
 
     // Food
@@ -138,19 +172,18 @@ public class Controller {
     
     public double calculateTotal(int orderId) {
     	// get all order items for the order
-        List<OrderFood> orderItems = orderFoodDAO.selectAll().stream()
-            .filter(item -> item.getOrderId() == orderId)
-            .collect(Collectors.toList());
+    	List<OrderFood> orderItems = getOrderItems(orderId);
 
         double total = 0.0;
-        for (OrderFood item : orderItems) {
-            Food food = foodDAO.select(item.getFoodId());
+        
+        for (OrderFood of : orderItems) {
+            Food food = foodDAO.select(of.getFoodId());
             if (food != null) {
                 // COST W/O MODIFICATIONS
                 double itemCost = food.getCost();
 
                 // MODIFICATIONS
-                for (String modif : item.getModifications()) {
+                for (String modif : of.getModifications()) {
                     if (food.getCategory() == Food.Category.BURGERS) {
                         itemCost += getBurgerModificationPrice(modif);
                     } else if (food.getCategory() == Food.Category.FRIES) {
@@ -159,7 +192,7 @@ public class Controller {
                 }
 
                 // TOTAL
-                itemCost *= item.getQuantity();
+                itemCost *= of.getQuantity();
                 total += itemCost;
             }
         }
@@ -186,30 +219,40 @@ public class Controller {
     }
 
 	public Map<Integer, Double> calculateTotalsBySeat(int orderId) {
-		List<OrderFood> orderItems = orderFoodDAO.selectAll().stream()
-				.filter(item -> item.getOrderId() == orderId)
-				.collect(Collectors.toList());
-
+		List<OrderFood> orderItems = getOrderItems(orderId);
 		Map<Integer, Double> seatTotals = new HashMap<>();
-		for (OrderFood item : orderItems) {
-			Food food = foodDAO.select(item.getFoodId());
+		
+		for (OrderFood of : orderItems) {
+			Food food = foodDAO.select(of.getFoodId());
 			if (food != null) {
 				double itemCost = food.getCost();
-				for (String modif : item.getModifications()) {
-					itemCost += getBurgerModificationPrice(modif)
-							+ getFriesModificationPrice(modif);
+				for (String modif : of.getModifications()) {
+					itemCost += getBurgerModificationPrice(modif) + getFriesModificationPrice(modif);
 				}
-				itemCost *= item.getQuantity();
-				seatTotals.merge(item.getSeat(), itemCost, Double::sum);
+				itemCost *= of.getQuantity();
+				
+				if (seatTotals.containsKey(of.getSeat())) {
+					seatTotals.put(of.getSeat(), seatTotals.get(of.getSeat()) + itemCost);
+				}
+				else {
+					seatTotals.put(of.getSeat(), itemCost);
+				}				
 			}
 		}
 		return seatTotals;
 	}
 	
     public List<Food> getFoodByCategory(String category) {
-        return foodDAO.selectAll().stream()
-                .filter(food -> food.getCategory().toString().equalsIgnoreCase(category))
-                .collect(Collectors.toList());
+    	List<Food> foodItems = foodDAO.selectAll();
+    	List<Food> foodCategory = new ArrayList<>();
+    	
+    	for (Food f : foodItems) {
+			if (f.getCategory().toString().equalsIgnoreCase(category)) {
+				foodCategory.add(f);
+			}
+    	}
+    	
+    	return foodCategory;
     }
 
     public Food getFoodById(int foodId) {
@@ -239,11 +282,17 @@ public class Controller {
     }
 
     public double getTotalTipsForServer(int serverId) {
-        return getSessionsForServer(serverId).stream()
-                .mapToDouble(s -> sessionDAO.getTotalTips(s.getId()))
-                .sum();
+    	List<Session> sessions = getSessionsForServer(serverId);
+    	
+    	double tipsTotal = 0.0;
+    	
+    	for (Session s : sessions) {
+    		tipsTotal += sessionDAO.getTotalTips(s.getId());
+    	}
+    	
+    	return tipsTotal;
     }
-    
+  
     
     ////current tip method
     
