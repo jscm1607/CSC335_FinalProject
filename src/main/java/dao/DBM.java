@@ -14,7 +14,7 @@ import org.h2.tools.Server;
  * H2 database connection. It initializes the database, and
  * abstracts away JDBC boilerplate for downstream DAO classes
  */
-public class DBM {
+public class DBM implements AutoCloseable {
     private final String URL;
     private final String USER;
     private final String PASSWORD;
@@ -43,15 +43,13 @@ public class DBM {
      * Closes the database connection when the DBM instance is no longer needed.
      */
     @Override
-    protected void finalize() throws Throwable {
+    public void close() {
         try {
             if (CONNECTION != null && !CONNECTION.isClosed()) {
                 CONNECTION.close();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            super.finalize();
         }
     }
 
