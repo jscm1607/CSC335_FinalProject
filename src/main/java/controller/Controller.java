@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import dao.FoodDAO;
 import dao.OrderDAO;
@@ -20,6 +22,11 @@ import model.Order;
 import model.OrderFood;
 import model.Server;
 import model.Session;
+
+
+//
+import dao.DBM;
+
 
 public class Controller {
     private ServerDAO serverDAO;
@@ -361,6 +368,30 @@ public class Controller {
     public FoodDAO getFoodDAO() {
         return this.foodDAO;
     } 
+    
+    
+    
+    
+    //method to add server tips by rank
+    public Map<Server, Double> getServerTipsRanked() {
+        List<Server> allServers = serverDAO.selectAll();
+        Map<Server, Double> tipMap = new HashMap<>();
+
+        for (Server server : allServers) {
+            double totalTips = getTotalTipsForServer(server.getId());
+            tipMap.put(server, totalTips);
+        }
+
+        return tipMap.entrySet().stream()
+            .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (e1, e2) -> e1,
+                LinkedHashMap::new
+            ));
+    }
+
     
 }
 

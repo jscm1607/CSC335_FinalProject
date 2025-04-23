@@ -61,6 +61,17 @@ public class RestaurantManagerPanel extends JPanel {
         TopItemsPanel topItemsPanel = new TopItemsPanel();
         TableOverviewPanel tableOverviewPanel = new TableOverviewPanel(server);
         TipsPanel tipsPanel = new TipsPanel(server);
+        
+        
+        
+        //added server ranking panel
+        
+        
+        
+        ServerRankingPanel serverRankingPanel = new ServerRankingPanel();
+        controller.registerDaoObserver(serverRankingPanel);
+        screens.add(serverRankingPanel, "ServerRanking");
+
 
         // register frames as observers to DAOs
         controller.registerDaoObserver(mainPOSPanel);
@@ -115,14 +126,65 @@ public class RestaurantManagerPanel extends JPanel {
 
         navPanel.add(Box.createVerticalGlue());
 
-        // Logout button
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutBtn.setMaximumSize(new Dimension(150, 30));
         logoutBtn.addActionListener(e -> {
-            SwingUtilities.invokeLater(LoginFrame::new);
-            SwingUtilities.getWindowAncestor(this).dispose(); // Close DashboardFrame
+            int choice = JOptionPane.showOptionDialog(
+                this,
+                "Who's next?",
+                "Logout Complete",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[] { "Login as Existing Server", "Register New Server" },
+                "Login as Existing Server"
+            );
+
+            // Close the current DashboardFrame
+            Window dashboard = SwingUtilities.getWindowAncestor(this);
+            if (dashboard != null) {
+                dashboard.dispose();
+            }
+
+            // Show selected frame
+            if (choice == 0) {
+                SwingUtilities.invokeLater(LoginFrame::new);
+            } else if (choice == 1) {
+                SwingUtilities.invokeLater(RegisterFrame::new);
+            }
         });
+        
+        
+        
+     // Close Restaurant button
+        JButton closeBtn = new JButton("Close Restaurant");
+        closeBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        closeBtn.setMaximumSize(new Dimension(150, 30));
+        closeBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to close the restaurant for the day?",
+                "Confirm Exit",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+            if (confirm == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        });
+        navPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        navPanel.add(closeBtn);
+
+
+        
+        //replaced
+        // Logout button
+//        JButton logoutBtn = new JButton("Logout");
+//        logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        logoutBtn.setMaximumSize(new Dimension(150, 30));
+//        logoutBtn.addActionListener(e -> {
+//            SwingUtilities.invokeLater(LoginFrame::new);
+//            SwingUtilities.getWindowAncestor(this).dispose(); // Close DashboardFrame
+//        });
 
         navPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         navPanel.add(logoutBtn);
@@ -368,11 +430,15 @@ class AssignTablePanel extends JPanel implements Observer {
 
 
 
+//////******************THIRDUPDATE********************////////////////////
+
+
 class SeatSelectPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
+        // Placeholder for observer update logic
     }
+
     private static final long serialVersionUID = 1L;
 
     private RestaurantManagerPanel app;
@@ -386,42 +452,33 @@ class SeatSelectPanel extends JPanel implements Observer {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
-        // Title
         JLabel title = new JLabel("Select a Seat - Table " + app.getLastAssignedTable(), SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         add(title, BorderLayout.NORTH);
 
-        // Center grid for seat buttons
         seatsPanel = new JPanel(new GridLayout(0, 4, 15, 15));
         seatsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(seatsPanel, BorderLayout.CENTER);
-        
-        // Add Pay Bill button to bottom right
+
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton payBillBtn = new JButton("Pay Bill");
         payBillBtn.addActionListener(e -> {
-        	System.out.println("SESSION ID " + app.getCurrentSessionId());
-        	System.out.println("ORDER ID " + app.getCurrentOrderId());
             int orderId = app.getCurrentOrderId();
             showPaymentDialog(orderId);
         });
         bottomPanel.add(payBillBtn);
         add(bottomPanel, BorderLayout.SOUTH);
     }
-    
-    // Add the payment dialog methods
-    private void showPaymentDialog(int orderId) {
-        System.out.println("Calculating total for Order ID: " + orderId);
-        double total = controller.calculateTotal(orderId);
-        System.out.println("Total calculated: $" + String.format("%.2f", total));
 
-        // If total is 0, check if there are any items
-        List<OrderFood> items = controller.getOrderItems(orderId);
-        System.out.println("Number of items in order: " + items.size());
-        for (OrderFood item : items) {
-            Food food = controller.getFoodById(item.getFoodId());
-            System.out.println("Item: " + food.getName() + ", Quantity: " + item.getQuantity() + ", Cost: $" + food.getCost());
+    private void showPaymentDialog(int orderId) {
+        Order order = controller.getOrder(orderId);
+        if (order.isClosed()) {
+            JOptionPane.showMessageDialog(this, "This order is already closed and cannot be paid again.", "Payment Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        double total = controller.calculateTotal(orderId);
+        List<OrderFood> items = controller.getOrderItems(orderId);
 
         Object[] options = {"Pay in Full", "Split by Seat", "Split by Amount"};
         int choice = JOptionPane.showOptionDialog(this,
@@ -434,15 +491,9 @@ class SeatSelectPanel extends JPanel implements Observer {
             options[0]);
 
         switch (choice) {
-            case 0: // Pay in Full
-                handlePayInFull(total);
-                break;
-            case 1: // Split by Seat
-                handleSplitBySeat(orderId, total);
-                break;
-            case 2: // Split by Amount
-                handleSplitByAmount(total);
-                break;
+            case 0: handlePayInFull(total); break;
+            case 1: handleSplitBySeat(orderId, total); break;
+            case 2: handleSplitByAmount(total); break;
         }
     }
 
@@ -451,21 +502,19 @@ class SeatSelectPanel extends JPanel implements Observer {
             "Payment processed: $" + String.format("%.2f", total),
             "Payment Complete",
             JOptionPane.INFORMATION_MESSAGE);
+
+        requestTipAndCloseOrder();
     }
 
     private void handleSplitBySeat(int orderId, double total) {
         Map<Integer, Double> seatTotals = controller.calculateTotalsBySeat(orderId);
-        System.out.println("Seat totals: " + seatTotals);
         StringBuilder message = new StringBuilder("Split by seat:\n\n");
         for (Map.Entry<Integer, Double> entry : seatTotals.entrySet()) {
-            message.append(String.format("Seat %d: $%.2f\n",
-                entry.getKey(), entry.getValue()));
+            message.append(String.format("Seat %d: $%.2f\n", entry.getKey(), entry.getValue()));
         }
-        // Show seat totals first
-        JOptionPane.showMessageDialog(this, message.toString(),
-            "Seat Totals", JOptionPane.INFORMATION_MESSAGE);
 
-        // Show payment confirmation dialog
+        JOptionPane.showMessageDialog(this, message.toString(), "Seat Totals", JOptionPane.INFORMATION_MESSAGE);
+
         int option = JOptionPane.showConfirmDialog(this,
             "Proceed with payment for all seats?",
             "Payment Confirmation",
@@ -477,11 +526,11 @@ class SeatSelectPanel extends JPanel implements Observer {
                 String.format("Payment processed!\nTotal paid: $%.2f", total),
                 "Payment Complete",
                 JOptionPane.INFORMATION_MESSAGE);
+            requestTipAndCloseOrder();
         }
     }
 
     private void handleSplitByAmount(double total) {
-        // Get number of occupied seats
         int seatCount = controller.getOrderItems(app.getCurrentOrderId()).stream()
             .map(OrderFood::getSeat)
             .distinct()
@@ -489,14 +538,10 @@ class SeatSelectPanel extends JPanel implements Observer {
             .size();
 
         if (seatCount <= 0) {
-            JOptionPane.showMessageDialog(this,
-                "No seats found with orders",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No seats found with orders", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Calculate equal split amount
         double amountPerSeat = Math.round((total / seatCount) * 100.0) / 100.0;
 
         StringBuilder message = new StringBuilder();
@@ -504,26 +549,42 @@ class SeatSelectPanel extends JPanel implements Observer {
         message.append(String.format("Number of seats: %d\n", seatCount));
         message.append(String.format("Each seat will pay: $%.2f\n", amountPerSeat));
 
-        int option = JOptionPane.showConfirmDialog(this,
-            message.toString(),
-            "Equal Split Confirmation",
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.INFORMATION_MESSAGE);
+        int option = JOptionPane.showConfirmDialog(this, message.toString(), "Equal Split Confirmation", JOptionPane.OK_CANCEL_OPTION);
 
         if (option == JOptionPane.OK_OPTION) {
             JOptionPane.showMessageDialog(this,
                 String.format("Bill fully paid!\nTotal paid: $%.2f", total),
                 "Payment Complete",
                 JOptionPane.INFORMATION_MESSAGE);
+            requestTipAndCloseOrder();
         }
     }
-    
+
+    private void requestTipAndCloseOrder() {
+        String tipInput = JOptionPane.showInputDialog(this, "Enter tip amount (optional):", "0.00");
+        if (tipInput != null) {
+            try {
+                double tip = Double.parseDouble(tipInput.trim());
+                controller.setTipForCurrentSession(app.getCurrentSessionId(), tip);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid tip entered. Tip set to $0.00.");
+                controller.setTipForCurrentSession(app.getCurrentSessionId(), 0.0);
+            }
+        }
+
+        controller.closeOrder(app.getCurrentOrderId());
+
+        // ✅ Final confirmation popup
+        JOptionPane.showMessageDialog(this,
+            "Payment complete. This order is now closed.",
+            "Order Closed",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+
     public void refresh() {
         seatsPanel.removeAll();
-
         int seatCount = app.getSeatCount();
 
-        // Update title
         JLabel title = (JLabel) getComponent(0);
         title.setText("Select a Seat - Table " + app.getLastAssignedTable());
 
@@ -551,6 +612,10 @@ class SeatSelectPanel extends JPanel implements Observer {
         btn.setPreferredSize(new Dimension(100, 40));
     }
 }
+
+
+
+
 
 class EditItemPanel extends JPanel implements Observer {
     @Override
@@ -1144,6 +1209,66 @@ class TipsPanel extends JPanel implements Observer {
         }
 
         tipsReportArea.setText(sb.toString());
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+   
+
+}
+
+
+
+
+//new server ranking panel class
+
+class ServerRankingPanel extends JPanel implements Observer {
+    private static final long serialVersionUID = 1L;
+    private Controller controller;
+    private JTextArea displayArea;
+
+    public ServerRankingPanel() {
+        this.controller = new Controller();
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel title = new JLabel("Server Tip Rankings", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        add(title, BorderLayout.NORTH);
+
+        displayArea = new JTextArea();
+        displayArea.setEditable(false);
+        displayArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        add(new JScrollPane(displayArea), BorderLayout.CENTER);
+
+        refresh();
+    }
+
+    public void refresh() {
+        StringBuilder sb = new StringBuilder();
+        Map<Server, Double> rankedTips = controller.getServerTipsRanked();
+
+        int rank = 1;
+        for (Map.Entry<Server, Double> entry : rankedTips.entrySet()) {
+            sb.append(String.format("%d. %s — $%.2f\n", rank++, entry.getKey().getUsername(), entry.getValue()));
+        }
+
+        displayArea.setText(sb.toString());
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        refresh();
     }
 }
 
