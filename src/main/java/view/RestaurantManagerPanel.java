@@ -68,9 +68,10 @@ public class RestaurantManagerPanel extends JPanel {
         
         
         
-        ServerRankingPanel serverRankingPanel = new ServerRankingPanel();
-        controller.registerDaoObserver(serverRankingPanel);
-        screens.add(serverRankingPanel, "ServerRanking");
+        ServerTipsRankingPanel serverTipsRankingPanel = new ServerTipsRankingPanel();
+        serverTipsRankingPanel.setName("ServerTipsRanking"); 
+        controller.registerDaoObserver(serverTipsRankingPanel);
+        screens.add(serverTipsRankingPanel, "ServerTipsRanking");
 
 
         // register frames as observers to DAOs
@@ -110,10 +111,18 @@ public class RestaurantManagerPanel extends JPanel {
         navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        
+        
         String[] views = {
-            "MainPOS", "AssignTable", "SeatSelect", "EditItem",
-            "OrderHistory", "TopItems", "TableOverview", "Tips"
-        };
+        	    "MainPOS", "AssignTable", "SeatSelect", "EditItem",
+        	    "OrderHistory", "TopItems", "TableOverview", "Tips", "ServerTipsRanking"
+        	};
+
+        //replaced
+//        String[] views = {
+//            "MainPOS", "AssignTable", "SeatSelect", "EditItem",
+//            "OrderHistory", "TopItems", "TableOverview", "Tips"
+//        };
 
         for (String view : views) {
             JButton btn = new JButton(view);
@@ -212,6 +221,15 @@ public class RestaurantManagerPanel extends JPanel {
                 ((OrderHistoryPanel) panel).refreshOrderHistory();
             }
         }
+        
+        //refresh ranked server tips
+        if (panelName.equals("ServerTipsRanking")) {
+            JPanel panel = getPanel("ServerTipsRanking");
+            if (panel instanceof ServerTipsRankingPanel) {
+                ((ServerTipsRankingPanel) panel).refresh();
+            }
+        }
+
 
         
         
@@ -1232,12 +1250,12 @@ class TipsPanel extends JPanel implements Observer {
 
 //new server ranking panel class
 
-class ServerRankingPanel extends JPanel implements Observer {
+class ServerTipsRankingPanel extends JPanel implements Observer {
     private static final long serialVersionUID = 1L;
     private Controller controller;
     private JTextArea displayArea;
 
-    public ServerRankingPanel() {
+    public ServerTipsRankingPanel() {
         this.controller = new Controller();
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
