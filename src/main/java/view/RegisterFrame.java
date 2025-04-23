@@ -57,7 +57,7 @@ public class RegisterFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Username and password cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+        /* 
         // Username validation
         if (username.length() < 6) {
             JOptionPane.showMessageDialog(this, "Username must be at least 6 characters long.", "Input Error", JOptionPane.WARNING_MESSAGE);
@@ -84,7 +84,8 @@ public class RegisterFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Username already exists.", "Account Creation Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        */
+        
         Server newServer = new Server(0, username, password);
         serverDAO.insert(newServer); // pass to the db object
 
