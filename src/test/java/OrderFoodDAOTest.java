@@ -150,8 +150,8 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
         String[] modifications = { "Extra cheese", "No onions", "Spicy", "No garlic" };
         of = of.setModifications(modifications);
         assertEquals(modifications.length, of.getModifications().length);
-        assertEquals(of.toString(), "OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=%s}".formatted(of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId(), String.join(", ", modifications)));
+        assertEquals(of.toString(), String.format("OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=%s}", of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId(), String.join(", ", modifications)));
         of = of.setModifications(null);
-        assertEquals(of.toString(), "OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=[]}".formatted(of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId()));
+        assertEquals(of.toString(), String.format("OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=[]}", of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId()));
     }
 }

@@ -233,21 +233,21 @@ public class Controller {
     }
 
     private double getBurgerModificationPrice(String modif) {
-        Map<String, Double> burgerModifications = Map.of(
-            "No Lettuce", 0.00,
-            "Extra Patty", 1.50,
-            "Add Cheese", 0.75,
-            "No Pickles", 0.00,
-            "Extra Tomato", 0.50
-        );
+        Map<String, Double> burgerModifications = new HashMap<String, Double>() {{
+            put("No Lettuce", 0.00);
+            put("Extra Patty", 1.50);
+            put("Add Cheese", 0.75);
+            put("No Pickles", 0.00);
+            put("Extra Tomato", 0.50);
+        }};
         return burgerModifications.getOrDefault(modif, 0.0);
     }
 
     private double getFriesModificationPrice(String modif) {
-        Map<String, Double> friesModifications = Map.of(
-        	"Jumbo Size", 1.00,
-        	"Animal Style", 1.50
-        );
+        Map<String, Double> friesModifications = new HashMap<String, Double>() {{
+        	put("Jumbo Size", 1.00);
+        	put("Animal Style", 1.50);
+        }};
         return friesModifications.getOrDefault(modif, 0.0);
     }
 
