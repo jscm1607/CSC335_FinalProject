@@ -79,7 +79,7 @@ public class LoginFrame extends JFrame {
         new RegisterFrame(); // Open the registration window
     }
 
-    // public static void main(String[] args) {
-    //     SwingUtilities.invokeLater(LoginFrame::new);
-    // }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(LoginFrame::new);
+    }
 }

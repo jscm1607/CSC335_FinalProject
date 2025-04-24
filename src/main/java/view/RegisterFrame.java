@@ -100,7 +100,7 @@ public class RegisterFrame extends JFrame {
     }
 
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(RegisterFrame::new);
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(RegisterFrame::new);
+    // }
 }
