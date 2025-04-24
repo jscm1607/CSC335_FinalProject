@@ -8,7 +8,8 @@ Jose Santiago Campa Morales
 
 ## Design:
 Our project follows a MVC strucutre to develop a restaurant 
-manager software from a server's point of view.<br />
+manager software from a server's point of view. <br />
+
 Oue model is made up of five distinct classes (Food, Order, 
 OrderFood, Server and Session). Each model class has its respective 
 Data Access Object (DAO) Class, which extends from the DAO class. 
@@ -28,7 +29,7 @@ entry point is the login frame, where a server has the opportunity to either
 log into their shift or register themselves. After log in, the server is met 
 with the main window, where other panels have different functions. Some include 
 assigning tables, checking table availability, selecting seats for ordering, and 
-analyzing sales.
+analyzing sales. Our view was created with the help of generative AI.
 
 ## Instructions:
 To run this program, make sure to be able to run
