@@ -7,7 +7,6 @@
 
 package controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import dao.DBM;
 import dao.FoodDAO;
 import dao.OrderDAO;
 import dao.OrderFoodDAO;
@@ -29,9 +29,6 @@ import model.Order;
 import model.OrderFood;
 import model.Server;
 import model.Session;
-
-
-import dao.DBM;
 
 
 @SuppressWarnings("deprecation")
@@ -67,11 +64,6 @@ public class Controller {
     	//System.out.println("Fetching server with username: " + username);
         return serverDAO.select(username);
     }
-    
-	public Server getServerById(int id) {
-		//System.out.println("Fetching server with ID: " + id);
-		return serverDAO.select("server" + id);
-	}
     
     // Session
     public int createSession(Server server) {
@@ -370,12 +362,6 @@ public class Controller {
             topItems.put(food, entry.getValue());
         }
         return topItems;
-    }
-
-    // Timestamp formatting
-    public String getOrderCreatedAt(int orderId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(new Date()); // You can refine this if you're tracking order timestamps in DB
     }
 
     public FoodDAO getFoodDAO() {
