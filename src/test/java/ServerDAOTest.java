@@ -12,10 +12,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.ServerDAO;
-import model.Order;
-import model.Server;
-import model.Session;
+import backend.Order;
+import backend.Server;
+import backend.ServerDAO;
+import backend.Session;
 
 @Testable
 public class ServerDAOTest extends DAOTest<ServerDAO> {

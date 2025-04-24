@@ -1,6 +1,6 @@
 // 100% coverage
 
-import dao.DBM;
+import backend.DBM;
 
 public abstract class DAOTest<T> {
     protected static DBM db = new DBM(

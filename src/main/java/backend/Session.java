@@ -4,12 +4,10 @@
  * Other variables include date, serverId and open. 
  * */
 
-package model;
+package backend;
 
 import java.util.Date;
 import java.util.List;
-
-import dao.SessionDAO;
 
 
 public class Session {

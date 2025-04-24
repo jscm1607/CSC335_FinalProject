@@ -9,10 +9,11 @@
 
 package view;
 
-import dao.ServerDAO;
-import model.Server;
-
 import javax.swing.*;
+
+import backend.Server;
+import backend.ServerDAO;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 

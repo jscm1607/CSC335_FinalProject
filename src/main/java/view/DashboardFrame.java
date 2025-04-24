@@ -8,9 +8,9 @@
 
 package view;
 
-import model.Server;
-
 import javax.swing.*;
+
+import backend.Server;
 
 public class DashboardFrame extends JFrame {
 	private static final long serialVersionUID = 1L;

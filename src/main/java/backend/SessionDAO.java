@@ -1,13 +1,10 @@
 // SessionDAO
 
-package dao;
+package backend;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Order;
-import model.Session;
 
 public class SessionDAO extends DAO<Session, Integer> {
 

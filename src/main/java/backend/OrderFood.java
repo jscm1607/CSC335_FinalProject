@@ -4,9 +4,7 @@
  * Other variables include seat, quantity, foodId, orderId and modifications.
  * */
 
-package model;
-
-import dao.OrderFoodDAO;
+package backend;
 
 public class OrderFood {
 	private static final OrderFoodDAO dao = new OrderFoodDAO();

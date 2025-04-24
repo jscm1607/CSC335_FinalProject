@@ -1,11 +1,9 @@
 // OrderDAO
 
-package dao;
+package backend;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Order;
 
 public class OrderDAO extends DAO<Order, Integer> {
 

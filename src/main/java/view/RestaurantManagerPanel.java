@@ -26,8 +26,13 @@ import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import controller.*;
-import model.*;
+import backend.Controller;
+import backend.Food;
+import backend.Order;
+import backend.OrderFood;
+import backend.Server;
+import backend.Session;
+import backend.*;
 
 import static view.Modifiers.*;
 

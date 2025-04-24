@@ -14,10 +14,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.OrderFoodDAO;
-import model.Food;
-import model.Order;
-import model.OrderFood;
+import backend.Food;
+import backend.Order;
+import backend.OrderFood;
+import backend.OrderFoodDAO;
 
 @Testable
 public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {

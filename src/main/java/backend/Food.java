@@ -4,9 +4,7 @@
  * Other variables include name, category, cost and inStock. 
  * */
 
-package model;
-
-import dao.FoodDAO;
+package backend;
 
 public class Food {
 	private static final FoodDAO dao = new FoodDAO();

@@ -1,11 +1,9 @@
 // OrderFoodDAO
 
-package dao;
+package backend;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import model.OrderFood;
 
 public class OrderFoodDAO extends DAO<OrderFood, Integer> {
 

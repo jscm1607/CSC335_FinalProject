@@ -1,12 +1,9 @@
 // ServerDAO
 
-package dao;
+package backend;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Order;
-import model.Server;
 
 public class ServerDAO extends DAO<Server, String> {
 

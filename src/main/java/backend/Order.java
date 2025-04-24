@@ -4,11 +4,9 @@
  * Other variables include closed, tableNumber, tip and sessionId. 
  * */
 
-package model;
+package backend;
 
 import java.util.Date;
-
-import dao.OrderDAO;
 
 public class Order {
 	private static final OrderDAO dao = new OrderDAO();

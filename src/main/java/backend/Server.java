@@ -4,11 +4,9 @@
  * Other variables include the username and password.
  * */
 
-package model;
+package backend;
 
 import java.util.List;
-
-import dao.ServerDAO;
 
 public final class Server {
 	private static final ServerDAO dao = new ServerDAO();
@@ -26,6 +24,7 @@ public final class Server {
 		this.password = password;
 	}
 
+	
 	public Server(String username, String password) {
 		this.username = username;
 		this.password = password;

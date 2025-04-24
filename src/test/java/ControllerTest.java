@@ -11,13 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import controller.Controller;
-import dao.FoodDAO;
-import model.Food;
-import model.Order;
-import model.OrderFood;
-import model.Server;
-import model.Session;
+import backend.Controller;
+import backend.Food;
+import backend.FoodDAO;
+import backend.Order;
+import backend.OrderFood;
+import backend.OrderFoodDAO;
+import backend.Server;
+import backend.Session;
 
 public class ControllerTest extends DAOTest<Controller> {
 	private Controller controller;
@@ -146,7 +147,12 @@ public class ControllerTest extends DAOTest<Controller> {
     
     @Test
 	void testAddFoodToOrder() {
-		controller.addFoodToOrder(1, 1, 1, 1, null);
+        Order order = OrderDAOTest.randomOrder(SessionDAOTest.randomSession(ServerDAOTest.randomServer()));
+        Food food = FoodDAOTest.randomFood();
+        assertTrue(order.getId() > -2);
+        assertTrue(food.getId() > -2);
+        controller.addFoodToOrder(order.getId(),food.getId(),1,2,new String[]{});
+        OrderFoodDAO orderFoodDAO = new OrderFoodDAO(db);
 	}
     
     @Test

@@ -1,6 +1,6 @@
 // Data Access Object
 
-package dao;
+package backend;
 
 import java.util.List;
 import java.util.Observable;

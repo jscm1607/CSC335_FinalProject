@@ -1,13 +1,11 @@
 // FoodDAO
 
-package dao;
+package backend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import model.Food;
 
 public class FoodDAO extends DAO<Food, Integer> {
 
