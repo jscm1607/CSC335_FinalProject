@@ -1,3 +1,12 @@
+/* The GUI was coded using generative AI. */
+/* 
+ * RegisterFrame.java
+ * This class defines a basic Swing window that serves as
+ * the registration for the restaurant application. This includes
+ * username and password input validation.
+ * 
+ * */
+
 package view;
 
 import dao.ServerDAO;
@@ -8,10 +17,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class RegisterFrame extends JFrame {
-
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField usernameField;
     private JPasswordField passwordField;
@@ -57,7 +62,7 @@ public class RegisterFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Username and password cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        /* 
+        
         // Username validation
         if (username.length() < 6) {
             JOptionPane.showMessageDialog(this, "Username must be at least 6 characters long.", "Input Error", JOptionPane.WARNING_MESSAGE);
@@ -84,7 +89,7 @@ public class RegisterFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Username already exists.", "Account Creation Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        */
+        
         
         Server newServer = new Server(0, username, password);
         serverDAO.insert(newServer); // pass to the db object

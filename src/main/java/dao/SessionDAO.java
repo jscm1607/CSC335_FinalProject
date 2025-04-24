@@ -1,3 +1,5 @@
+// SessionDAO
+
 package dao;
 
 import java.sql.Timestamp;
@@ -80,6 +82,7 @@ public class SessionDAO extends DAO<Session, Integer> {
         notifyDBChanged();
     }
 
+    // TIPS
     public double getTotalTips(Integer id){
         double total = db.executeQuery(
             "SELECT SUM(tip) AS totalTips FROM Orders where sessionId = ?"
@@ -95,6 +98,7 @@ public class SessionDAO extends DAO<Session, Integer> {
         return total;
     }
 
+    // OPEN SESSIONS
     public List<Session> selectAllOpen() {
         List<Session> sessions = db.executeQuery("SELECT * FROM Session WHERE open = true",
                 statement -> {},
@@ -113,6 +117,7 @@ public class SessionDAO extends DAO<Session, Integer> {
         return sessions;
     }
 
+    // ORDERS GIVEN SESSION ID
     public List<Order> getOrders(Integer sessionId){
         List<Order> orders = db.executeQuery(
             "SELECT * FROM Orders where sessionId = ?"

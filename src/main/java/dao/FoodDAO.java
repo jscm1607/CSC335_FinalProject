@@ -1,3 +1,5 @@
+// FoodDAO
+
 package dao;
 
 import java.util.ArrayList;
@@ -83,6 +85,8 @@ public class FoodDAO extends DAO<Food, Integer> {
         notifyDBChanged();
     }
 
+    // Additional methods for FoodDAO
+    // FREQUENCY
     public Integer getNumFoodOrdersByFoodId(int id) {
         Integer result = db.executeQuery("SELECT SUM(quantity) AS total FROM OrderFood WHERE foodId = ?", 
         ps -> ps.setInt(1, id), 
@@ -96,6 +100,7 @@ public class FoodDAO extends DAO<Food, Integer> {
         return result;
     }
 
+    // MONEY MADE
     public Map<String, Double> getTotalProfitByFoodName() {
         List<Food> allFoods = selectAll();
         Map<String, Double> foodProfits = new HashMap<>();

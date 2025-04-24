@@ -1,3 +1,6 @@
+// 100% coverage DAO
+// 100% coverage model
+
 import java.util.ArrayList;
 import java.util.List;
 

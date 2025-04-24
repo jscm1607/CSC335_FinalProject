@@ -1,3 +1,6 @@
+// 100% coverage DAO
+// 100% coverage model
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -143,6 +146,19 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         assertEquals(1, dao.selectAll().size());
     }
 
+    @Test
+    void testSetters() {
+		Session session = randomSession(ServerDAOTest.randomServer());
+		assertTrue(session.getId() > -2);
+
+		// Test setters
+		session = session.setServer(1);
+		assertEquals(1, session.getServer());
+
+		session = session.setOpen(false);
+		assertFalse(session.isOpen());
+    }
+    
     @Test
     void testSessionDelete() {
         // Start with empty table

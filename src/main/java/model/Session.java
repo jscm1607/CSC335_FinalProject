@@ -1,3 +1,9 @@
+/* Session.java
+ * This class represents a Session item in the system.
+ * A session object involves final variables, including the item id.
+ * Other variables include date, serverId and open. 
+ * */
+
 package model;
 
 import java.util.Date;

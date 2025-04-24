@@ -1,3 +1,10 @@
+/* Controller.java
+ * 
+ * This class connects the view (Swing panels) with
+ * both the model (data) and the database.
+ * 
+ * */
+
 package controller;
 
 import java.text.SimpleDateFormat;
@@ -24,11 +31,12 @@ import model.Server;
 import model.Session;
 
 
-//
 import dao.DBM;
 
 
+@SuppressWarnings("deprecation")
 public class Controller {
+	// Hold DAOs
     private ServerDAO serverDAO;
     private SessionDAO sessionDAO;
     private FoodDAO foodDAO;
@@ -56,17 +64,18 @@ public class Controller {
 
     // Server
     public Server getServerByUsername(String username) {
-    	System.out.println("Fetching server with username: " + username);
+    	//System.out.println("Fetching server with username: " + username);
         return serverDAO.select(username);
     }
     
 	public Server getServerById(int id) {
-		System.out.println("Fetching server with ID: " + id);
+		//System.out.println("Fetching server with ID: " + id);
 		return serverDAO.select("server" + id);
 	}
     
     // Session
     public int createSession(Server server) {
+    	// New object
         Session session = new Session(new Date(), server.getId(), true);
         return session.getId();
     }
@@ -76,6 +85,7 @@ public class Controller {
     }
 
     public List<Session> getSessionsForServer(int serverId) {
+    	// sessions given session ID
         List<Session> allSessions = sessionDAO.selectAll();
         List<Session> serverSessions = new ArrayList<>();
         
@@ -84,7 +94,6 @@ public class Controller {
                 serverSessions.add(session);
             }
         }
-        
         return serverSessions;
     }
 
@@ -111,12 +120,12 @@ public class Controller {
     public Order getOrderBySessionId(int sessionId) {
         List<Order> orders = orderDAO.selectAll();
         
+        // for every order, get those with session ID
 		for (Order order : orders) {
 			if (order.getSessionId() == sessionId && !order.isClosed()) {
 				return order;
 			}
 		}
-		
 		return null;
     }
 
@@ -124,10 +133,12 @@ public class Controller {
         List<Session> sessions = getSessionsForServer(serverId);
         Set<Integer> sessionIds = new HashSet<>();
         
+        // Get all server-specific sessions
 		for (Session session : sessions) {
 			sessionIds.add(session.getId());
 		}
 		
+		// match sessions with orders
 		List<Order> orders = orderDAO.selectAll();
 		List<Order> serverOrders = new ArrayList<>();
 		
@@ -136,7 +147,6 @@ public class Controller {
 				serverOrders.add(order);
 			}
 		}
-		
 		return serverOrders;
     }
 
@@ -149,20 +159,19 @@ public class Controller {
 				sessionOrders.add(order);
 			}
     	}
-    	
     	return sessionOrders;
     }
 
-    /// 04/18
+  
 	public boolean closeOrder(int orderId) {
 	    Order order = orderDAO.select(orderId);
 	    if (order != null && !order.isClosed()) {
-	    	System.out.println("PRE " + order);
+	    	//System.out.println("PRE " + order);
 	    	// create new obj because immutability
 	        Order closedOrder = order.setClosed(true);
-	        System.out.println("Order " + orderId + " closed.");
+	        //System.out.println("Order " + orderId + " closed.");
 	        orderDAO.update(closedOrder);
-	        System.out.println("POST " + order);
+	        //System.out.println("POST " + order);
 	        return true;
 	    }
 	    return false;
@@ -174,7 +183,8 @@ public class Controller {
     
     // OrderFood
     public void addFoodToOrder(int orderId, int foodId, int seat, int quantity, String[] modifications) {
-        OrderFood orderFood = new OrderFood(seat, quantity, foodId, orderId, modifications);
+        @SuppressWarnings("unused")
+		OrderFood orderFood = new OrderFood(seat, quantity, foodId, orderId, modifications);
         // Persisted via constructor
     }
 
@@ -194,7 +204,6 @@ public class Controller {
 				orderItems.add(of);
 			}
     	}
-    	
     	return orderItems;
     }
 
@@ -223,7 +232,6 @@ public class Controller {
                         itemCost += getFriesModificationPrice(modif);
                     }
                 }
-
                 // TOTAL
                 itemCost *= of.getQuantity();
                 total += itemCost;
@@ -232,8 +240,12 @@ public class Controller {
         return total;
     }
 
+    // Modifications, Prices
     private double getBurgerModificationPrice(String modif) {
-        Map<String, Double> burgerModifications = new HashMap<String, Double>() {{
+        Map<String, Double> burgerModifications = new HashMap<String, Double>() {
+			private static final long serialVersionUID = 1L;
+
+		{
             put("No Lettuce", 0.00);
             put("Extra Patty", 1.50);
             put("Add Cheese", 0.75);
@@ -244,26 +256,33 @@ public class Controller {
     }
 
     private double getFriesModificationPrice(String modif) {
-        Map<String, Double> friesModifications = new HashMap<String, Double>() {{
+        Map<String, Double> friesModifications = new HashMap<String, Double>() {
+			private static final long serialVersionUID = 1L;
+
+		{
         	put("Jumbo Size", 1.00);
         	put("Animal Style", 1.50);
         }};
         return friesModifications.getOrDefault(modif, 0.0);
     }
 
+    // SEAT, COST
 	public Map<Integer, Double> calculateTotalsBySeat(int orderId) {
 		List<OrderFood> orderItems = getOrderItems(orderId);
 		Map<Integer, Double> seatTotals = new HashMap<>();
 		
+		// for every order item, get the food item
 		for (OrderFood of : orderItems) {
 			Food food = foodDAO.select(of.getFoodId());
 			if (food != null) {
+				// add modifications
 				double itemCost = food.getCost();
 				for (String modif : of.getModifications()) {
 					itemCost += getBurgerModificationPrice(modif) + getFriesModificationPrice(modif);
 				}
 				itemCost *= of.getQuantity();
 				
+				// match seat with cost
 				if (seatTotals.containsKey(of.getSeat())) {
 					seatTotals.put(of.getSeat(), seatTotals.get(of.getSeat()) + itemCost);
 				}
@@ -296,6 +315,7 @@ public class Controller {
         new Food(name, category, cost, inStock);  // persisted by constructor
     }
 
+    // Start with default food items
     public void seedFoodItemsIfEmpty() {
         List<Food> allFood = getAllFood();
         boolean hasBurger = allFood.stream().anyMatch(f -> f.getCategory() == Food.Category.BURGERS);
@@ -314,6 +334,7 @@ public class Controller {
         return sessionDAO.getTotalTips(sessionId);
     }
 
+    // Add tips per session
     public double getTotalTipsForServer(int serverId) {
     	List<Session> sessions = getSessionsForServer(serverId);
     	
@@ -322,13 +343,9 @@ public class Controller {
     	for (Session s : sessions) {
     		tipsTotal += sessionDAO.getTotalTips(s.getId());
     	}
-    	
     	return tipsTotal;
     }
-  
-    
-    ////current tip method
-    
+   
     public void setTipForCurrentSession(int sessionId, double tip) {
         Order order = getOrderBySessionId(sessionId);
         if (order != null) {
@@ -336,18 +353,17 @@ public class Controller {
         }
     }
 
-    
-
-
-    // Top items
+    // Top items -- FOOD, FREQUENCY
     public Map<Food, Integer> getTopOrderedItems() {
         List<OrderFood> allOrderItems = orderFoodDAO.selectAll();
         Map<Integer, Integer> foodIdToCount = new HashMap<>();
         for (OrderFood item : allOrderItems) {
             int foodId = item.getFoodId();
+            // add to map or +1
             foodIdToCount.put(foodId, foodIdToCount.getOrDefault(foodId, 0) + item.getQuantity());
         }
 
+        // Convert food IDs to Food objects
         Map<Food, Integer> topItems = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : foodIdToCount.entrySet()) {
             Food food = foodDAO.select(entry.getKey());
@@ -361,17 +377,11 @@ public class Controller {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date()); // You can refine this if you're tracking order timestamps in DB
     }
-    
-    
-    
-    
+
     public FoodDAO getFoodDAO() {
         return this.foodDAO;
     } 
-    
-    
-    
-    
+ 
     //method to add server tips by rank
     public Map<Server, Double> getServerTipsRanked() {
         List<Server> allServers = serverDAO.selectAll();
@@ -382,6 +392,7 @@ public class Controller {
             tipMap.put(server, totalTips);
         }
 
+        // Sort the map by values (total tips) in order
         return tipMap.entrySet().stream()
             .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
             .collect(Collectors.toMap(
@@ -391,17 +402,6 @@ public class Controller {
                 LinkedHashMap::new
             ));
     }
-    
-    
-   
-
 
     
 }
-
-
-
-
-
-
-

@@ -1,3 +1,9 @@
+/* Food.java
+ * This class represents a Food item in the system.
+ * A food object involves final variables, including the item id.
+ * Other variables include name, category, cost and inStock. 
+ * */
+
 package model;
 
 import dao.FoodDAO;

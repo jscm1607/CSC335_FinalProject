@@ -1,3 +1,9 @@
+/* Server.java
+ * This class represents a Server item in the system.
+ * A server object involves final variables, including the item id.
+ * Other variables include the username and password.
+ * */
+
 package model;
 
 import java.util.List;

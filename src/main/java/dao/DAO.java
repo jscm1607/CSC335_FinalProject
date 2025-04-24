@@ -1,3 +1,5 @@
+// Data Access Object
+
 package dao;
 
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Observable;
  * operations between database entities and Java objects.
  * T is the type of the entity, ID is the id value type.
  */
+@SuppressWarnings("deprecation")
 public abstract class DAO<T, ID> extends Observable {
     
     protected void notifyDBChanged() {

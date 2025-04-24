@@ -1,3 +1,11 @@
+/* The GUI was coded using generative AI. */
+/* 
+ * LoginFrame.java
+ * This class defines a basic Swing window that serves as
+ * the login for the restaurant application. This includes
+ * a connection with the registration form.
+ * 
+ * */
 
 package view;
 
@@ -9,10 +17,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class LoginFrame extends JFrame {
-
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField usernameField;
     private JPasswordField passwordField;
@@ -23,7 +27,7 @@ public class LoginFrame extends JFrame {
         this.serverDAO = new ServerDAO();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 200);
+        setSize(400, 200);
         setLocationRelativeTo(null); // center on screen
         setLayout(new GridLayout(4, 1, 10, 10));
 
@@ -37,7 +41,14 @@ public class LoginFrame extends JFrame {
 
         JButton loginButton = new JButton("Login");
         loginButton.addActionListener(this::handleLogin);
-        add(loginButton);
+        
+        JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(e -> openRegisterFrame());
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(loginButton);
+        buttonPanel.add(registerButton);
+        add(buttonPanel);
 
         setVisible(true);
     }
@@ -61,6 +72,11 @@ public class LoginFrame extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Invalid credentials", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private void openRegisterFrame() {
+        dispose(); // Close the login window
+        new RegisterFrame(); // Open the registration window
     }
 
     public static void main(String[] args) {

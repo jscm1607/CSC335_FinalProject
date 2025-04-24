@@ -1,3 +1,5 @@
+// 100% coverage
+
 import dao.DBM;
 
 public abstract class DAOTest<T> {

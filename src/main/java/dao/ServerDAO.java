@@ -1,3 +1,5 @@
+// ServerDAO
+
 package dao;
 
 import java.util.ArrayList;
@@ -72,6 +74,7 @@ public class ServerDAO extends DAO<Server, String> {
         notifyDBChanged();
     }
 
+    // Method to get all open orders for a specific server
     public List<Order> getOpenOrders(int serverId) {
         List<Order> orders = db.executeQuery(
                 "WITH open_sessions AS (SELECT id FROM Session WHERE serverId = ? AND open = TRUE) SELECT o.* FROM Orders AS o JOIN open_sessions AS os ON o.sessionId = os.id WHERE o.closed = FALSE;",

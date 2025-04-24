@@ -1,9 +1,18 @@
+/* The GUI was coded using generative AI. */
+/* 
+ * RestaurantManagerPanel.java
+ * This class is the central GUI component that manages
+ * the restaurant application's interface. It includes the main window,
+ * assign table functionality, seat selection, order history,
+ * edit item functionality, top items, table overview, and tips.
+ * These panels extend JPanel and are organized using a CardLayout.
+ * 
+ * */
 
 package view;
 
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,15 +28,11 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.*;
 import model.*;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 
 import static view.Modifiers.*;
 
+@SuppressWarnings("deprecation")
 public class RestaurantManagerPanel extends JPanel {
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private CardLayout cardLayout;
     private JPanel screens;
@@ -38,11 +43,11 @@ public class RestaurantManagerPanel extends JPanel {
     private int currentSessionId;
     private int currentOrderId;
     private Controller controller;
-    private Session session;
+    @SuppressWarnings("unused")
+	private Session session;
     
     private EditItemPanel editItemPanel;
 
-    
     private int currentSeatNumber;
 
     public RestaurantManagerPanel(Server server) {
@@ -62,17 +67,10 @@ public class RestaurantManagerPanel extends JPanel {
         TableOverviewPanel tableOverviewPanel = new TableOverviewPanel(server);
         TipsPanel tipsPanel = new TipsPanel(server);
         
-        
-        
-        //added server ranking panel
-        
-        
-        
         ServerTipsRankingPanel serverTipsRankingPanel = new ServerTipsRankingPanel();
         serverTipsRankingPanel.setName("ServerTipsRanking"); 
         controller.registerDaoObserver(serverTipsRankingPanel);
         screens.add(serverTipsRankingPanel, "ServerTipsRanking");
-
 
         // register frames as observers to DAOs
         controller.registerDaoObserver(mainPOSPanel);
@@ -95,14 +93,11 @@ public class RestaurantManagerPanel extends JPanel {
         editItemPanel.setName("EditItem");
         screens.add(editItemPanel, "EditItem");
 
-
         screens.add(orderHistoryPanel, "OrderHistory");
 
         screens.add(topItemsPanel, "TopItems");
         screens.add(tableOverviewPanel, "TableOverview");
-       // screens.add(new TipsPanel(), "Tips");
         screens.add(tipsPanel, "Tips");
-
 
         setLayout(new BorderLayout());
 
@@ -110,19 +105,12 @@ public class RestaurantManagerPanel extends JPanel {
         JPanel navPanel = new JPanel();
         navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        
+       
         
         String[] views = {
         	    "MainPOS", "AssignTable", "SeatSelect", "EditItem",
         	    "OrderHistory", "TopItems", "TableOverview", "Tips", "ServerTipsRanking"
         	};
-
-        //replaced
-//        String[] views = {
-//            "MainPOS", "AssignTable", "SeatSelect", "EditItem",
-//            "OrderHistory", "TopItems", "TableOverview", "Tips"
-//        };
 
         for (String view : views) {
             JButton btn = new JButton(view);
@@ -135,6 +123,7 @@ public class RestaurantManagerPanel extends JPanel {
 
         navPanel.add(Box.createVerticalGlue());
 
+        // Log out button
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutBtn.setMaximumSize(new Dimension(150, 30));
@@ -162,11 +151,9 @@ public class RestaurantManagerPanel extends JPanel {
             } else if (choice == 1) {
                 SwingUtilities.invokeLater(RegisterFrame::new);
             }
-        });
+        });  
         
-        
-        
-     // Close Restaurant button
+        // Close Restaurant button
         JButton closeBtn = new JButton("Close Restaurant");
         closeBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         closeBtn.setMaximumSize(new Dimension(150, 30));
@@ -183,18 +170,6 @@ public class RestaurantManagerPanel extends JPanel {
         navPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         navPanel.add(closeBtn);
 
-
-        
-        //replaced
-        // Logout button
-//        JButton logoutBtn = new JButton("Logout");
-//        logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        logoutBtn.setMaximumSize(new Dimension(150, 30));
-//        logoutBtn.addActionListener(e -> {
-//            SwingUtilities.invokeLater(LoginFrame::new);
-//            SwingUtilities.getWindowAncestor(this).dispose(); // Close DashboardFrame
-//        });
-
         navPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         navPanel.add(logoutBtn);
 
@@ -205,8 +180,7 @@ public class RestaurantManagerPanel extends JPanel {
         cardLayout.show(screens, "MainPOS");
     }
 
-  
-    
+    // Change window  
     public void switchTo(String panelName) {
         if (panelName.equals("SeatSelect")) {
             seatSelectPanel.refresh();
@@ -229,11 +203,7 @@ public class RestaurantManagerPanel extends JPanel {
                 ((ServerTipsRankingPanel) panel).refresh();
             }
         }
-
-
-        
-        
-        
+  
         cardLayout.show(screens, panelName);
         screens.revalidate();
         screens.repaint();
@@ -297,14 +267,13 @@ public class RestaurantManagerPanel extends JPanel {
     }
 }
 
+
+// MAIN WINDOW
+@SuppressWarnings("deprecation")
 class MainPOSPanel extends JPanel implements Observer {
     @Override
-    public void update(Observable o, Object arg) {
-        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
-    }
-    /**
-	 * 
-	 */
+    public void update(Observable o, Object arg) {}
+
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("unused")
 	private Server server;
@@ -325,20 +294,16 @@ class MainPOSPanel extends JPanel implements Observer {
         JLabel title = new JLabel("Main POS - Logged in as: " + updatedServer.getUsername(), SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
         add(title, BorderLayout.NORTH);
-
-        JButton toAssign = new JButton("Assign Table");
-        toAssign.addActionListener(e -> app.switchTo("AssignTable"));
-        add(toAssign, BorderLayout.SOUTH);
     }
 }
 
+// ASSIGN TABLE
+@SuppressWarnings("deprecation")
 class AssignTablePanel extends JPanel implements Observer {
     @Override
-    public void update(Observable o, Object arg) {
-        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
-    }
+    public void update(Observable o, Object arg) {}
+    
     private static final long serialVersionUID = 1L;
-
     private JTextField tableNumberField;
     private JTextField seatCountField;
     private JLabel statusLabel;
@@ -450,15 +415,11 @@ class AssignTablePanel extends JPanel implements Observer {
 }
 
 
-
-//////******************THIRDUPDATE********************////////////////////
-
-
+// SEAT SELECT
+@SuppressWarnings("deprecation")
 class SeatSelectPanel extends JPanel implements Observer {
     @Override
-    public void update(Observable o, Object arg) {
-        // Placeholder for observer update logic
-    }
+    public void update(Observable o, Object arg) {}
 
     private static final long serialVersionUID = 1L;
 
@@ -481,6 +442,7 @@ class SeatSelectPanel extends JPanel implements Observer {
         seatsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(seatsPanel, BorderLayout.CENTER);
 
+        // Payment button
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton payBillBtn = new JButton("Pay Bill");
         payBillBtn.addActionListener(e -> {
@@ -491,6 +453,7 @@ class SeatSelectPanel extends JPanel implements Observer {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    // Payment dialog
     private void showPaymentDialog(int orderId) {
         Order order = controller.getOrder(orderId);
         if (order.isClosed()) {
@@ -498,8 +461,10 @@ class SeatSelectPanel extends JPanel implements Observer {
             return;
         }
 
+        // Payment options
         double total = controller.calculateTotal(orderId);
-        List<OrderFood> items = controller.getOrderItems(orderId);
+        @SuppressWarnings("unused")
+		List<OrderFood> items = controller.getOrderItems(orderId);
 
         Object[] options = {"Pay in Full", "Split by Seat", "Split by Amount"};
         int choice = JOptionPane.showOptionDialog(this,
@@ -518,6 +483,7 @@ class SeatSelectPanel extends JPanel implements Observer {
         }
     }
 
+    // #1 - FULL PAYMENT
     private void handlePayInFull(double total) {
         JOptionPane.showMessageDialog(this,
             "Payment processed: $" + String.format("%.2f", total),
@@ -527,6 +493,7 @@ class SeatSelectPanel extends JPanel implements Observer {
         requestTipAndCloseOrder();
     }
 
+    // #2 - SPLIT BY SEAT
     private void handleSplitBySeat(int orderId, double total) {
         Map<Integer, Double> seatTotals = controller.calculateTotalsBySeat(orderId);
         StringBuilder message = new StringBuilder("Split by seat:\n\n");
@@ -551,6 +518,7 @@ class SeatSelectPanel extends JPanel implements Observer {
         }
     }
 
+    // #3 - SPLIT BY AMOUNT
     private void handleSplitByAmount(double total) {
         int seatCount = controller.getOrderItems(app.getCurrentOrderId()).stream()
             .map(OrderFood::getSeat)
@@ -581,6 +549,7 @@ class SeatSelectPanel extends JPanel implements Observer {
         }
     }
 
+    // TIPPING
     private void requestTipAndCloseOrder() {
         String tipInput = JOptionPane.showInputDialog(this, "Enter tip amount (optional):", "0.00");
         if (tipInput != null) {
@@ -635,14 +604,12 @@ class SeatSelectPanel extends JPanel implements Observer {
 }
 
 
-
-
-
+// EDIT ITEM
+@SuppressWarnings("deprecation")
 class EditItemPanel extends JPanel implements Observer {
     @Override
-    public void update(Observable o, Object arg) {
-        // FIXME generic comment to implement Observer.update() - Not sure if this Panel needs refresh on DB data
-    }
+    public void update(Observable o, Object arg) {}
+    
     private static final long serialVersionUID = 1L;
 
     private final Controller controller;
@@ -655,7 +622,10 @@ class EditItemPanel extends JPanel implements Observer {
     private JComboBox<Food.Category> categoryComboBox;
     private JTextField tipField; // NEW
 
-    private static final Map<String, Double> BURGER_MODS = new HashMap<String, Double>() {{
+    private static final Map<String, Double> BURGER_MODS = new HashMap<String, Double>() {
+		private static final long serialVersionUID = 1L;
+
+	{
         put("No Lettuce", 0.0);
         put("Extra Patty", 1.50);
         put("Add Cheese", 0.75);
@@ -663,7 +633,10 @@ class EditItemPanel extends JPanel implements Observer {
         put("Extra Tomato", 0.50);
     }};
 
-    private static final Map<String, Double> FRIES_MODS = new HashMap<String, Double>() {{
+    private static final Map<String, Double> FRIES_MODS = new HashMap<String, Double>() {
+		private static final long serialVersionUID = 1L;
+
+	{
         put("Jumbo Size", 1.00);
         put("Animal Style", 1.50);
     }};
@@ -703,7 +676,8 @@ class EditItemPanel extends JPanel implements Observer {
 
         // Bottom: Tip field and Back button
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        JLabel tipLabel = new JLabel("Tip ($):");
+        @SuppressWarnings("unused")
+		JLabel tipLabel = new JLabel("Tip ($):");
         tipField = new JTextField(6);
         JButton tipUpdateBtn = new JButton("Update Tip");
 
@@ -731,11 +705,8 @@ class EditItemPanel extends JPanel implements Observer {
 			parent.switchTo("MainPOS");
 		});
 		
-        bottomPanel.add(tipLabel);
-        bottomPanel.add(tipField);
-        bottomPanel.add(tipUpdateBtn);
+		// BACK TO SEAT SELECT
         bottomPanel.add(backBtn);
-        bottomPanel.add(closeOrderBtn);
 
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -753,15 +724,6 @@ class EditItemPanel extends JPanel implements Observer {
 
         this.currentSession = controller.getSessionById(sessionId);
         
-        
-
-        
-        
-        
-        
-        
-        ////old set tip method
-
         // Set existing tip
         double currentTip = order != null ? order.getTip() : 0.0;
 
@@ -772,6 +734,7 @@ class EditItemPanel extends JPanel implements Observer {
         updateOrderPreview();
     }
 
+    // refresh
     private void refreshFoodButtons() {
         foodButtonPanel.removeAll();
         Food.Category selectedCategory = (Food.Category) categoryComboBox.getSelectedItem();
@@ -798,10 +761,12 @@ class EditItemPanel extends JPanel implements Observer {
         foodButtonPanel.repaint();
     }
 
+    // MODIFIER DIALOG
     private void showModifierDialog(Food food, Food.Category category) {
         JPanel panel = new JPanel();
         List<String> selectedMods = new ArrayList<>();
-        double extraCost = 0.0;
+        @SuppressWarnings("unused")
+		double extraCost = 0.0;
 
         if (category == Food.Category.SHAKES) {
             panel.setLayout(new GridLayout(SHAKE_FLAVORS.length, 1));
@@ -865,6 +830,7 @@ class EditItemPanel extends JPanel implements Observer {
         updateOrderPreview();
     }
 
+    // UPDATE ORDER PREVIEW
     private void updateOrderPreview() {
         if (currentSession == null) {
             orderArea.setText("No active session.");
@@ -904,21 +870,21 @@ class EditItemPanel extends JPanel implements Observer {
 }
 
 
-
-/***************************OHP with problems*****************************/
-
-
+// ORDER HISTORY
+@SuppressWarnings("deprecation")
 class OrderHistoryPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
-        refreshOrderHistory();
+        refreshOrderHistory();    
     }
+    
     private static final long serialVersionUID = 1L;
 
     private JTextArea orderHistoryArea;
     private Controller controller;
     private Server server;
-    private Session session;
+    @SuppressWarnings("unused")
+	private Session session;
 
     public OrderHistoryPanel(Server server) {
         this.server = server;
@@ -994,13 +960,12 @@ class OrderHistoryPanel extends JPanel implements Observer {
 }
 
 
-
-
 /**
  * Displays the most frequently ordered food items across all sessions.
  * Pulls live order data from the Controller and sorts by quantity.
  */
 
+@SuppressWarnings("deprecation")
 class TopItemsPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
@@ -1082,17 +1047,14 @@ class TopItemsPanel extends JPanel implements Observer {
 }
 
 
-
-
-
+// TABLE OVERVIEW
+@SuppressWarnings("deprecation")
 class TableOverviewPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         refreshTableData();
     }
-    /**
-	 * 
-	 */
+    
 	private static final long serialVersionUID = 1L;
 	private JTable tableStatusTable;
 	private DefaultTableModel tableModel;
@@ -1109,7 +1071,7 @@ class TableOverviewPanel extends JPanel implements Observer {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(titleLabel, BorderLayout.NORTH);
 
-        String[] columnNames = {"Table", "Status", "Server", "Guests"};
+        String[] columnNames = {"Table", "Status", "Server"};
         
         tableModel = new DefaultTableModel(columnNames, 0) {
 			private static final long serialVersionUID = 1L;
@@ -1168,8 +1130,7 @@ class TableOverviewPanel extends JPanel implements Observer {
             Object[] row = {
                 order.getTableNumber(),
                 order.isClosed() ? "Available" : "Occupied",
-                serverName,
-                //order.isClosed() ? "-" : controller.getSeatCountForOrder(order.getId())
+                order.isClosed() ? "-" : serverName
             };
             tableModel.addRow(row);
         }
@@ -1180,6 +1141,9 @@ class TableOverviewPanel extends JPanel implements Observer {
     }
 }
 
+
+// TIPS PANEL
+@SuppressWarnings("deprecation")
 class TipsPanel extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
@@ -1231,28 +1195,11 @@ class TipsPanel extends JPanel implements Observer {
 
         tipsReportArea.setText(sb.toString());
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-   
-
 }
 
 
-
-
-//new server ranking panel class
-
+// SERVER TIPS RANKING
+@SuppressWarnings("deprecation")
 class ServerTipsRankingPanel extends JPanel implements Observer {
     private static final long serialVersionUID = 1L;
     private Controller controller;

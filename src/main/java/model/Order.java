@@ -1,3 +1,9 @@
+/* Order.java
+ * This class represents an Order in the system.
+ * An order object involves final variables, including the item id.
+ * Other variables include closed, tableNumber, tip and sessionId. 
+ * */
+
 package model;
 
 import java.util.Date;
@@ -14,6 +20,7 @@ public class Order {
 	private final double tip;
 	private final int sessionId;
 	
+	@SuppressWarnings("unused")
 	private double totalCost;
 	
 	private java.util.Date createdAt = new java.util.Date();  // default to now, will require better implementation?
