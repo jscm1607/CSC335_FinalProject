@@ -423,6 +423,9 @@ class AssignTablePanel extends JPanel implements Observer {
 
             // If exists and open, fetch existing order for this table
             if (existingOrder != null) {
+                // reassign table to this server now (for sake of tips, etc)
+                controller.getSessionById(existingOrder.getSessionId()).setServer(server.getId());
+                // set existing order in the app
                 app.setCurrentSessionId(existingOrder.getSessionId());
                 app.setCurrentOrderId(existingOrder.getId());
                 app.setLastAssignedTable(tableNumber);
