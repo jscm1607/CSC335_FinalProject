@@ -1,10 +1,10 @@
 ## CSC 335 - Object-Oriented Programming and Design
 ## Final Project -- Restaurant
 ## Members
-Gabe Venegas__
-Aidan Fuhrmann__
-Cody Rice__
-Jose Santiago Campa Morales__
+Gabe Venegas<br />
+Aidan Fuhrmann<br />
+Cody Rice<br />
+Jose Santiago Campa Morales
 
 ## Instructions:
 To run this program, make sure to be able to run
