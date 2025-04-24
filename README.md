@@ -1,2 +1,19 @@
-# CSC335_FinalProject
-CSC335 - Final Project | Restaurant
+## CSC 335 - Object-Oriented Programming and Design
+## Final Project -- Restaurant
+## Members
+Gabe Venegas__
+Aidan Fuhrmann__
+Cody Rice__
+Jose Santiago Campa Morales__
+
+## Instructions:
+To run this program, make sure to be able to run
+Jar files in the command line.
+
+## Command (make sure file is in directory)
+java -jar FinalProject_RestaurantJar.jar
+
+## Run without Jar File
+If running without jar file, make sure you run
+this program as a Java Application from the
+LoginFrame.java file.
