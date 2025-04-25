@@ -192,6 +192,57 @@ public class ControllerTest extends DAOTest<Controller> {
     }
     
     @Test
+    void testCalculateTotal2() {
+        Server server = ServerDAOTest.randomServer();
+        Session session = SessionDAOTest.randomSession(server);
+        Order order = OrderDAOTest.randomOrder(session);
+
+        Food burger = new Food("Burger", Food.Category.BURGERS, 5.00, true);
+        Food fries = new Food("Fries", Food.Category.FRIES, 3.50, true);
+
+        String[] burgerMods = {"Extra Patty", "Add Cheese"};
+        String[] friesMods = {"Jumbo Size"};
+        controller.addFoodToOrder(order.getId(), burger.getId(), 2, 1, burgerMods);
+        controller.addFoodToOrder(order.getId(), fries.getId(), 1, 1, friesMods);
+
+        double expectedTotal = 19.00;
+
+        double result = controller.calculateTotal(order.getId());
+    }
+    
+    @Test
+    void testCalculateTotalsBySeat2() {
+        Server server = ServerDAOTest.randomServer();
+        Session session = SessionDAOTest.randomSession(server);
+        Order order = OrderDAOTest.randomOrder(session);
+
+        Food burger = new Food("Burger", Food.Category.BURGERS, 5.00, true);
+        Food fries = new Food("Fries", Food.Category.FRIES, 3.50, true);
+
+        String[] burgerMods = {"Extra Patty"};
+        String[] friesMods = {"Animal Style"};
+        controller.addFoodToOrder(order.getId(), burger.getId(), 1, 1, burgerMods);
+        controller.addFoodToOrder(order.getId(), fries.getId(), 1, 2, friesMods);
+
+        Map<Integer, Double> seatTotals = controller.calculateTotalsBySeat(order.getId());
+    }
+    
+    @Test
+    void testAddFoodToOrderWithSession() {
+        Server server = ServerDAOTest.randomServer();
+        Session session = SessionDAOTest.randomSession(server);
+        Order order = new Order(false, 4, session.getId(), session.getId(), null);
+        Food burger = new Food("Burger", Food.Category.BURGERS, 5.00, true);
+
+        String[] mods = {"Extra Patty", "Add Cheese"};
+        controller.addFoodToOrder(session.getId(), burger.getId(), 2, 3, mods);
+
+        List<OrderFood> orderItems = controller.getOrderItems(order.getId());
+        assertNotNull(orderItems);
+        orderItems.isEmpty();
+    }
+    
+    @Test
     void testCalculateTotalBySeat() {
     	Map<Integer, Double> result = controller.calculateTotalsBySeat(1);
     }
@@ -199,6 +250,19 @@ public class ControllerTest extends DAOTest<Controller> {
     @Test
     void testGetFoodByCategory() {
     	List<Food> result = controller.getFoodByCategory("burgers");
+    	
+        Food burger1 = new Food("Burger1", Food.Category.BURGERS, 5.00, true);
+        Food burger2 = new Food("Burger2", Food.Category.BURGERS, 6.00, true);
+        Food fries = new Food("Fries", Food.Category.FRIES, 3.50, true);
+        Food drink = new Food("Soda", Food.Category.BEVERAGES, 2.00, true);
+
+        controller.addFood(burger1.getName(), burger1.getCost(), burger1.getCategory(), burger1.isInStock());
+        controller.addFood(burger2.getName(), burger2.getCost(), burger2.getCategory(), burger2.isInStock());
+        controller.addFood(fries.getName(), fries.getCost(), fries.getCategory(), fries.isInStock());
+        controller.addFood(drink.getName(), drink.getCost(), drink.getCategory(), drink.isInStock());
+
+        // Test burgers category
+        List<Food> burgerResults = controller.getFoodByCategory("burgers");
     }
     
     @Test
