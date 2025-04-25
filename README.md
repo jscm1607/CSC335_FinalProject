@@ -6,6 +6,9 @@ Aidan Fuhrmann<br />
 Cody Rice<br />
 Jose Santiago Campa Morales
 
+## Video
+[![Watch the video](https://img.youtube.com/vi/ePmj9b9VglM/maxresdefault.jpg)](https://youtu.be/ePmj9b9VglM)
+
 ## Design:
 Our project follows a MVC strucutre to develop a restaurant 
 manager software from a server's point of view. <br />
