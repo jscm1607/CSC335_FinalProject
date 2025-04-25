@@ -41,6 +41,9 @@ mvn clean package
 java -jar target/CSC335_FinalProject-1.0-jar-with-dependencies.jar
 ```
 If you do not have maven, a precompiled jar is provided in repo root.
+```
+java -jar CSC335_FinalProject-1.0-jar-with-dependencies.jar
+```
 
 ## Run without Jar File
 If running without jar file, make sure you run
