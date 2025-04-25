@@ -32,5 +32,13 @@ assigning tables, checking table availability, selecting seats for ordering, and
 analyzing sales. Our view was created with the help of generative AI.
 
 ## Instructions:
-Make sure you run this program as a
-Java Application from the LoginFrame.java file.
+To run this program, make sure to be able to run
+Jar files in the command line.
+
+## Command (make sure file is in directory)
+java -jar FinalProject_RestaurantJar.jar
+
+## Run without Jar File
+If running without jar file, make sure you run
+this program as a Java Application from the
+LoginFrame.java file.
