@@ -31,12 +31,13 @@ with the main window, where other panels have different functions. Some include
 assigning tables, checking table availability, selecting seats for ordering, and 
 analyzing sales. Our view was created with the help of generative AI.
 
-## Instructions:
-To run this program, make sure to be able to run
-Jar files in the command line.
-
-## Command (make sure file is in directory)
-java -jar FinalProject_RestaurantJar.jar
+## Running from Jar:
+To run this program, make sure to be able to run maven, and jar files in the command line.
+```
+mvn clean package
+java -jar target/CSC335_FinalProject-1.0-jar-with-dependencies.jar
+```
+If you do not have maven, a precompiled jar is provided in repo root.
 
 ## Run without Jar File
 If running without jar file, make sure you run
