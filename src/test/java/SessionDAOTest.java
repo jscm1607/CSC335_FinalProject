@@ -1,3 +1,6 @@
+// 100% coverage DAO
+// 100% coverage model
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,11 +15,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.ServerDAO;
-import dao.SessionDAO;
-import model.Order;
-import model.Server;
-import model.Session;
+import backend.Order;
+import backend.Server;
+import backend.ServerDAO;
+import backend.Session;
+import backend.SessionDAO;
 
 @Testable
 public class SessionDAOTest extends DAOTest<SessionDAO> {
@@ -25,6 +28,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
     public SessionDAOTest() {
         this.dao = new SessionDAO(db);
         this.serverDao = new ServerDAO(db);
+        db.runH2Console();
     }
 
     public static Session randomSession(Server server) {
@@ -60,7 +64,7 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         for (int i = 0; i < 10; i++) {
             double tip = (Math.random() * 100);
             aggregatedTips += tip;
-            Order temp_order = new Order(false, i, tip, session.getId());
+            Order temp_order = new Order(false, i, tip, session.getId(), new Date());
             assertTrue(temp_order.getId() > -2);
         }
 
@@ -87,9 +91,9 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
             assertTrue(temp_order.getId() > -2);
         }
 
-        List<Order> resultOrders = dao.getOrders(session.getId());
+        List<Order> resultOrders = session.getOrders();
         assertEquals(orders.size(), resultOrders.size());
-        List<Order> resultSeperateOrders = dao.getOrders(session.getId());
+        List<Order> resultSeperateOrders = seperateSession.getOrders();
         assertEquals(seperateOrders.size(), resultSeperateOrders.size());
     }
 
@@ -142,6 +146,19 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
         assertEquals(1, dao.selectAll().size());
     }
 
+    @Test
+    void testSetters() {
+		Session session = randomSession(ServerDAOTest.randomServer());
+		assertTrue(session.getId() > -2);
+
+		// Test setters
+		session = session.setServer(1);
+		assertEquals(1, session.getServer());
+
+		session = session.setOpen(false);
+		assertFalse(session.isOpen());
+    }
+    
     @Test
     void testSessionDelete() {
         // Start with empty table
@@ -232,5 +249,23 @@ public class SessionDAOTest extends DAOTest<SessionDAO> {
             assertEquals(expected.isOpen(), actual.isOpen());
             assertTrue(Math.abs(expected.getDate().getTime() - actual.getDate().getTime()) < 1000);
         }
+    }
+
+    @Test
+    void testSessionSetDate(){
+        Session session = randomSession(ServerDAOTest.randomServer());
+        assertTrue(session.getId() > -2);
+        Date newDate = new Date(System.currentTimeMillis() + 1000);
+        session = session.setDate(newDate);
+        assertEquals(newDate.getTime(), session.getDate().getTime(), 10);
+    }
+
+    @Test
+    void testSessionToString() {
+        Session session = randomSession(ServerDAOTest.randomServer());
+        String expectedString = "Session{date=" + session.getDate() +
+                ", server=" + session.getServer() +
+                ", open=" + session.isOpen() + "}";
+        assertEquals(expectedString, session.toString());
     }
 }

@@ -1,3 +1,6 @@
+// 100% coverage DAO
+// 100% coverage model
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,16 +14,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.OrderFoodDAO;
-import model.Food;
-import model.Order;
-import model.OrderFood;
+import backend.Food;
+import backend.Order;
+import backend.OrderFood;
+import backend.OrderFoodDAO;
 
 @Testable
 public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
 
     public OrderFoodDAOTest() {
         this.dao = new OrderFoodDAO(db);
+        db.runH2Console();
     }
 
     public static OrderFood randomOrderFood(Food food, Order order) {
@@ -140,5 +144,17 @@ public class OrderFoodDAOTest extends DAOTest<OrderFoodDAO> {
     @Test
     void testOrderFoodSelectNonExistent() {
         assertNull(dao.select(99999), "Should return null for non-existent OrderFood");
+    }
+
+    @Test
+    void testOrderFoodModifications() {
+        OrderFood of = randomValidOrderFood();
+        assertTrue(of.getId() >= 0);
+        String[] modifications = { "Extra cheese", "No onions", "Spicy", "No garlic" };
+        of = of.setModifications(modifications);
+        assertEquals(modifications.length, of.getModifications().length);
+        assertEquals(of.toString(), String.format("OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=%s}", of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId(), String.join(", ", modifications)));
+        of = of.setModifications(null);
+        assertEquals(of.toString(), String.format("OrderFood{id=%d,seat=%d, quantity=%d, food=%d, orderId=%d, modifications=[]}", of.getId(), of.getSeat(), of.getQuantity(), of.getFoodId(), of.getOrderId()));
     }
 }
