@@ -1,6 +1,10 @@
-package model;
+/* OrderFood.java
+ * This class represents an OrderFood item in the system.
+ * A order food object involves final variables, including the item id.
+ * Other variables include seat, quantity, foodId, orderId and modifications.
+ * */
 
-import dao.OrderFoodDAO;
+package backend;
 
 public class OrderFood {
 	private static final OrderFoodDAO dao = new OrderFoodDAO();

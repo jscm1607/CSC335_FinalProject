@@ -1,9 +1,13 @@
-package model;
+/* Session.java
+ * This class represents a Session item in the system.
+ * A session object involves final variables, including the item id.
+ * Other variables include date, serverId and open. 
+ * */
+
+package backend;
 
 import java.util.Date;
 import java.util.List;
-
-import dao.SessionDAO;
 
 
 public class Session {
@@ -80,7 +84,7 @@ public class Session {
 	public String toString() {
 		return "Session{date=" + date +
 			   ", server=" + serverId +
-			   ", open=" + open;
+			   ", open=" + open+"}";
 	}
 
 	

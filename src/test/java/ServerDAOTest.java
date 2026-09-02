@@ -1,3 +1,6 @@
+// 100% coverage DAO
+// 100% coverage model
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,15 +12,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.ServerDAO;
-import model.Order;
-import model.Server;
-import model.Session;
+import backend.Order;
+import backend.Server;
+import backend.ServerDAO;
+import backend.Session;
 
 @Testable
 public class ServerDAOTest extends DAOTest<ServerDAO> {
     public ServerDAOTest() {
         this.dao = new ServerDAO(db);
+        db.runH2Console();
     }
 
     public static Server randomServer() {
@@ -122,6 +126,16 @@ public class ServerDAOTest extends DAOTest<ServerDAO> {
         assertEquals(before, dao.selectAll().size());
     }
 
+    @Test
+    void testServerSetUsername(){
+        Server server = randomServer();
+        String newUsername = "newUser" + System.currentTimeMillis();
+        server = server.setUsername(newUsername);
+        assertEquals(newUsername, server.getUsername());
+    }
 
-
+    @Test
+    void testServerSelectNull(){
+        assertEquals(null, dao.select(""));
+    }
 }

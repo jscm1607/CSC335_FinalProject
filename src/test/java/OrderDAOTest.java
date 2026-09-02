@@ -1,4 +1,8 @@
+// 100% coverage DAO
+// 100% coverage model
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -10,20 +14,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import dao.OrderDAO;
-import model.Order;
-import model.Server;
-import model.Session;
+import backend.Order;
+import backend.OrderDAO;
+import backend.Server;
+import backend.Session;
 
 @Testable
 public class OrderDAOTest extends DAOTest<OrderDAO> {
 
     public OrderDAOTest() {
         this.dao = new OrderDAO(db);
+        db.runH2Console();
     }
 
     public static Order randomOrder(Session session) {
-        return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId());
+        return new Order(Math.random() < 0.5,(int) (Math.random() * 100),Math.random() * 500, session.getId(), new Date((int) Math.random() * 1000000000));
     }
 
     static Order randomValidOrder() {
@@ -134,5 +139,20 @@ public class OrderDAOTest extends DAOTest<OrderDAO> {
         // Select non-existent order
         Order res = dao.select(99999);
         assertNull(res);
+    }
+
+    @Test
+    void testOrderVariousSetterGetters(){
+        Order order = randomValidOrder();
+        assertTrue(order.getId() > -2);
+        int tableNumber = order.getTableNumber();
+        double tip = order.getTip();
+        order = order.setTableNumber(tableNumber + 1);
+        assertEquals(tableNumber + 1, order.getTableNumber());
+        order = order.setTip(tip + 1.0);
+        assertEquals(tip + 1.0, order.getTip());
+        Date newDate = new java.util.Date();
+        order = order.setCreatedAt(newDate);
+        assertEquals(newDate, order.getCreatedAt());
     }
 }

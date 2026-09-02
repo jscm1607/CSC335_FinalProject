@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS Orders (
     tableNumber INT,
     tip DOUBLE,
     sessionId INT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sessionId) REFERENCES Session(id)
 );
 

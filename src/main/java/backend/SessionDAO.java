@@ -1,11 +1,10 @@
-package dao;
+// SessionDAO
+
+package backend;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Order;
-import model.Session;
 
 public class SessionDAO extends DAO<Session, Integer> {
 
@@ -16,12 +15,14 @@ public class SessionDAO extends DAO<Session, Integer> {
 
     @Override
     public int insert(Session entity) {
-        return db.executeInsert("INSERT INTO Session (date, serverId, open) VALUES (?, ?, ?)",
+        int result = db.executeInsert("INSERT INTO Session (date, serverId, open) VALUES (?, ?, ?)",
                 statement -> {
                     statement.setTimestamp(1, new Timestamp(entity.getDate().getTime()));
                     statement.setInt(2, entity.getServer());
                     statement.setBoolean(3, entity.isOpen());
                 });
+        notifyDBChanged();
+        return result;
     }
 
     @Override
@@ -33,11 +34,12 @@ public class SessionDAO extends DAO<Session, Integer> {
                     statement.setBoolean(3, entity.isOpen());
                     statement.setInt(4, entity.getId());
                 });
+        notifyDBChanged();
     }
 
     @Override
     public Session select(Integer id) {
-        return db.executeQuery("SELECT * FROM Session WHERE id = ?",
+        Session session = db.executeQuery("SELECT * FROM Session WHERE id = ?",
                 statement -> statement.setInt(1, id),
                 resultSet -> resultSet.next()
                         ? new Session(
@@ -46,77 +48,92 @@ public class SessionDAO extends DAO<Session, Integer> {
                                 resultSet.getInt("serverId"),
                                 resultSet.getBoolean("open"))
                         : null);
+        notifyDBChanged();
+        return session;
     }
 
     @Override
     public List<Session> selectAll() {
-        return db.executeQuery("SELECT * FROM Session",
+        List<Session> sessions = db.executeQuery("SELECT * FROM Session",
                 statement -> {},
                 rs -> {
-                    List<Session> sessions = new ArrayList<>();
+                    List<Session> result = new ArrayList<>();
                     while (rs.next()) {
-                        sessions.add(new Session(
+                        result.add(new Session(
                                 rs.getInt("id"),
                                 rs.getTimestamp("date"),
                                 rs.getInt("serverId"),
-                            rs.getBoolean("open")
+                                rs.getBoolean("open")
                         ));
                     }
-                    return sessions;
+                    return result;
                 });
+        notifyDBChanged();
+        return sessions;
     }
 
     @Override
     public void delete(Integer id) {
         db.executeUpdate("DELETE FROM Session WHERE id = ?",
                 statement -> statement.setInt(1, id));
+        notifyDBChanged();
     }
 
+    // TIPS
     public double getTotalTips(Integer id){
-        return db.executeQuery(
+        double total = db.executeQuery(
             "SELECT SUM(tip) AS totalTips FROM Orders where sessionId = ?"
         ,statement ->statement.setInt(1, id),
                 rs -> {
-                    double total = 0;
+                    double result = 0;
                     while (rs.next()) {
-                        total += rs.getDouble("totalTips");
+                        result += rs.getDouble("totalTips");
                     }
-                    return total;
+                    return result;
                 });
+        notifyDBChanged();
+        return total;
     }
 
+    // OPEN SESSIONS
     public List<Session> selectAllOpen() {
-        return db.executeQuery("SELECT * FROM Session WHERE open = true",
+        List<Session> sessions = db.executeQuery("SELECT * FROM Session WHERE open = true",
                 statement -> {},
                 rs -> {
-                    List<Session> sessions = new ArrayList<>();
+                    List<Session> result = new ArrayList<>();
                     while (rs.next()) {
-                        sessions.add(new Session(
+                        result.add(new Session(
                                 rs.getInt("id"),
                                 rs.getTimestamp("date"),
                                 rs.getInt("serverId"),
                                 rs.getBoolean("open")));
                     }
-                    return sessions;
+                    return result;
                 });
+        notifyDBChanged();
+        return sessions;
     }
 
+    // ORDERS GIVEN SESSION ID
     public List<Order> getOrders(Integer sessionId){
-        return db.executeQuery(
+        List<Order> orders = db.executeQuery(
             "SELECT * FROM Orders where sessionId = ?"
         ,statement ->statement.setInt(1, sessionId),
         rs -> {
-            List<Order> orders = new ArrayList<>();
+            List<Order> result = new ArrayList<>();
             while (rs.next()) {
-                orders.add(new Order(
+                result.add(new Order(
                     rs.getInt("id"),
                     rs.getBoolean("closed"),
                     rs.getInt("tableNumber"),
                     rs.getDouble("tip"),
-                    rs.getInt("sessionId")
+                    rs.getInt("sessionId"),
+                    rs.getDate("createdAt")
                 ));
             }
-            return orders;
+            return result;
         });
+        notifyDBChanged();
+        return orders;
     }
 }
